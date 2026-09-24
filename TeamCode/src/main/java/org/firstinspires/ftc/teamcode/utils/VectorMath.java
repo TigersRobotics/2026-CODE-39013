@@ -82,9 +82,10 @@ public class VectorMath {
         x1+=x2;
         y1+=y2;
 
-        return null;
+        r1 = Math.sqrt((Math.pow(x1, 2) + Math.pow(y1, 2)));
+        t1 = Math.tan((y1/x1))*180/Math.PI;
 
-
+        return new double[] {r1,t1};
 
     }
 
