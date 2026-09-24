@@ -1,12 +1,18 @@
 package org.firstinspires.ftc.teamcode.gamepieces;
 
 
-
+/**
+The main gamepiece class, which is what the auton will store
+ */
 public class GamePiece {
     public static enum Colour {
         BLUE,
         RED
     }
+
+    /**
+     * The x and y coordinates of the GamePiece in the camera(not the robot/field)
+     */
     public final int x, y;
     public final double cmDistance;
     public GamePiece(int x, int y, double cmDistance) {
@@ -17,7 +23,9 @@ public class GamePiece {
 
 }
 
-
+/**
+A sorter thing so that you cna make an array that only fits ball types(nectar and pollen)
+*/
 interface Ball {}
 
 class Hive extends GamePiece {
@@ -40,6 +48,7 @@ class Hive extends GamePiece {
         this.colour = colour;
         this.tilt = tilt;
         this.angle = angle;
+        this.fill = fill;
     }
 
 
