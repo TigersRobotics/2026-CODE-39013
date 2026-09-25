@@ -21,7 +21,9 @@ public class HoodAngleTuner extends OpMode {
 
     @Override
     public void loop() {
-        hoodServo.setPosition(angle / 180.0*Math.PI);
+
+        hoodServo.setPosition(angle/180);
+
         if(gamepad1.dpadUpWasPressed()) {
             angle += delta;
             delta /= 2;
