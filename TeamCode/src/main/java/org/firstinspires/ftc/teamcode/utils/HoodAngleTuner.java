@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @TeleOp
 public class HoodAngleTuner extends OpMode {
 
@@ -28,5 +30,6 @@ public class HoodAngleTuner extends OpMode {
             angle -= delta;
             delta /= 2;
         }
+        telemetry.addLine("Angle: " + angle);
     }
 }
