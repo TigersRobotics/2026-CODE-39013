@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class VectorMath {
@@ -24,7 +23,9 @@ public class VectorMath {
     }
 
 
-    public static double shotAngle(double d, double h, double r, double camAngle, Telemetry telemetry) {
+    public static double[] shotAngle(double d, double h, double r, double camAngle, Telemetry telemetry) {
+/// returns turret vertical angle, and the horizonal angle. Input angleFromTag: facing right is pos
+/// all angles are in degrees, lengths are in meters, speeds are in m/s
         double [] nV = addV(new double[]{d, camAngle}, new double[]{Constants.APRIL_TAG_HIVE_OFFSET_D, 180-r});
         double y = h + Constants.APRIL_TAG_HIVE_OFFSET_H;
         double x = nV[0];
@@ -35,21 +36,21 @@ public class VectorMath {
 
         // checks if the angle is valid
         if (angle >= Constants.MAX_TURRET_ANGLE_UP ||
-                angle <= Constants.MAX_TURRET_ANGLE_DOWN) {
+                angle <= Constants.MAX_TURRET_ANGLE_DOWN || Double.isNaN(angle)){
 
             // invalid initial angle will return a second angle
             nAngle = angleCalc((byte) 1, x, y);
             if (nAngle >= Constants.MAX_TURRET_ANGLE_UP ||
-                    nAngle <= Constants.MAX_TURRET_ANGLE_DOWN) {
+                    nAngle <= Constants.MAX_TURRET_ANGLE_DOWN || Double.isNaN(nAngle)){
 
                 // will log that it cannot find valid angle, shows init angle and backup angle
                 telemetry.addLine(("No valid angle found: " + angle + " " + nAngle));
-                return -1;
+                return new double[] {Double.NaN};
             }
-            return nAngle;
+            return new double[] {nAngle, nV[1]};
         }
 
-        return angle;
+        return new double[] {angle, nV[1]};
     }
 
     private static double angleCalc(byte add, double x, double y) {
@@ -60,10 +61,15 @@ public class VectorMath {
         double v4 = Math.pow(v, 4);
 
         double x2 = Math.pow(x, 2);
-        double root = (add) * Math.sqrt((v4 - g * (g * x2 + 2 * y * v2)));
-        double arg = (v4 + root) / (g * x);
+        double discriminant = v4 - g * (g * x2 + 2 * y * v2);
+        if (discriminant < 0) {
+            return Double.NaN; // Target is physically out of reach
+        }
 
-        return Math.atan(arg);
+        double root = add * Math.sqrt(discriminant);
+        double arg = (v2 + root) / (g * x);
+
+        return Math.atan(arg)/Math.PI*180;
     }
 
     private static double[] addV(double[] v1, double[] v2){
@@ -83,7 +89,7 @@ public class VectorMath {
         y1+=y2;
 
         r1 = Math.sqrt((Math.pow(x1, 2) + Math.pow(y1, 2)));
-        t1 = Math.tan((y1/x1))*180/Math.PI;
+        t1 = Math.atan2(y1, x1)*180/Math.PI;
 
         return new double[] {r1,t1};
 
