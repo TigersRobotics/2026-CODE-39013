@@ -13,13 +13,13 @@ public class ControllerTest extends OpMode {
 
     @Override
     public void init() {
-        turretController = new TurretController(hardwareMap);
+        turretController = new TurretController(hardwareMap, telemetry);
 
     }
     @Override
     public void loop() {
         if(ENABLE_TURRET_CONTROLLER) {
-            turretController.setPosition(gamepad1.left_stick_x*Math.PI, true);
+            turretController.setTurretPosition(gamepad1.left_stick_x*Math.PI, true);
         }
     }
 
