@@ -25,7 +25,15 @@ public class ControllerTest extends OpMode {
     public void loop() {
 
         if(ENABLE_TURRET_CONTROLLER) {
-            turretController.setTurretPosition(gamepad1.left_stick_x*Math.PI, true);
+            turretController.setTurretPosition(gamepad2.left_stick_x*Math.PI, true);
+        }
+
+        if(ENABLE_DRIVE_CONTROLLER) {
+            if(gamepad1.rightBumperWasPressed()) driveController.increaseSpeed();
+            if(gamepad1.leftBumperWasPressed()) driveController.decreaseSpeed();
+
+            // stick y is negative when pushed up
+            driveController.updateMovement(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
 
