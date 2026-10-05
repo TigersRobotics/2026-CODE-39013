@@ -3,23 +3,25 @@ package sim;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
- * Physics for an 18 in mecanum robot on the 144 in BIOBUZZ field.
- * Field coords are inches from the center, +x right and +y away from the audience.
- * Heading is clockwise from +y, in radians.
+ * Physics for our mecanum robot on the BIOBUZZ field.
+ * Field coords are inches from the center (see Field). Heading is clockwise from +y, in radians.
  */
 public class SimRobot {
-    public static final double FIELD_SIZE = 144;
-    public static final double ROBOT_SIZE = 18;
-    // goBILDA 312 rpm with 104 mm wheels is about 67 in/s free speed, a bit less under load
-    public static final double MAX_SPEED = 60;
-    // half the track width plus half the wheelbase
-    public static final double TURN_RADIUS = 14;
+    // Robot specs, change these to match the real robot
+    public static final double ROBOT_WIDTH = 18;
+    public static final double ROBOT_LENGTH = 18;
+    public static final double TRACK_WIDTH = 15;
+    public static final double WHEELBASE = 13;
+    // goBILDA 104 mm mecanum wheels on 312 rpm Yellow Jackets
+    public static final double WHEEL_DIAMETER = 4.094;
+    public static final double MOTOR_RPM = 312;
+    // real robots lose some speed to weight and friction
+    public static final double LOAD_FACTOR = 0.85;
     // how long the robot takes to get up to speed
     public static final double ACCEL_TIME = 0.15;
 
-    // HIVE frame base in the middle of the field
-    public static final double HIVE_WIDTH = 49.46;
-    public static final double HIVE_DEPTH = 38.95;
+    public static final double MAX_SPEED = MOTOR_RPM / 60 * Math.PI * WHEEL_DIAMETER * LOAD_FACTOR;
+    public static final double TURN_RADIUS = (TRACK_WIDTH + WHEELBASE) / 2;
 
     public final SimMotor frontLeft = new SimMotor();
     public final SimMotor frontRight = new SimMotor();
@@ -39,7 +41,12 @@ public class SimRobot {
         this.heading = heading;
     }
 
-    /** Hardware names have to match what the robot code asks for */
+    public static SimRobot atStart(boolean red) {
+        double[] s = Field.start(red);
+        return new SimRobot(s[0], s[1], s[2]);
+    }
+
+    /** Hardware names have to match the robot config and what the robot code asks for */
     public HardwareMap buildHardwareMap() {
         HardwareMap map = new HardwareMap();
         map.put("frontLeft", frontLeft);
@@ -83,18 +90,44 @@ public class SimRobot {
     }
 
     private void collide() {
-        // rotated square still fits inside this half size
-        double half = ROBOT_SIZE / 2 * (Math.abs(Math.cos(heading)) + Math.abs(Math.sin(heading)));
-        double limit = FIELD_SIZE / 2 - half;
-        x = Math.max(-limit, Math.min(limit, x));
-        y = Math.max(-limit, Math.min(limit, y));
+        for (double[] leg : Field.HIVE_LEGS) pushOutOfCircle(leg[0], leg[1], Field.HIVE_LEG_RADIUS);
+        for (double[] flower : Field.FLOWERS) pushOutOfCircle(flower[0], flower[1], Field.FLOWER_RADIUS);
 
-        // push out of the HIVE frame along the shortest way out
-        double hx = HIVE_WIDTH / 2 + half, hy = HIVE_DEPTH / 2 + half;
-        if (Math.abs(x) < hx && Math.abs(y) < hy) {
-            if (hx - Math.abs(x) < hy - Math.abs(y)) x = Math.copySign(hx, x);
-            else y = Math.copySign(hy, y);
+        // perimeter walls, using how far the rotated robot reaches in x and y
+        double sin = Math.abs(Math.sin(heading)), cos = Math.abs(Math.cos(heading));
+        double reachX = ROBOT_WIDTH / 2 * cos + ROBOT_LENGTH / 2 * sin;
+        double reachY = ROBOT_WIDTH / 2 * sin + ROBOT_LENGTH / 2 * cos;
+        x = Math.max(-Field.HALF + reachX, Math.min(Field.HALF - reachX, x));
+        y = Math.max(-Field.HALF + reachY, Math.min(Field.HALF - reachY, y));
+    }
+
+    /** Moves the robot so its rectangle no longer overlaps a round obstacle */
+    private void pushOutOfCircle(double cx, double cy, double r) {
+        double sin = Math.sin(heading), cos = Math.cos(heading);
+        double dx = cx - x, dy = cy - y;
+        // obstacle center in robot coords, +right and +forward
+        double right = dx * cos - dy * sin;
+        double fwd = dx * sin + dy * cos;
+        double hw = ROBOT_WIDTH / 2, hl = ROBOT_LENGTH / 2;
+
+        double nearRight = Math.max(-hw, Math.min(hw, right));
+        double nearFwd = Math.max(-hl, Math.min(hl, fwd));
+        double offRight = right - nearRight, offFwd = fwd - nearFwd;
+        double dist = Math.hypot(offRight, offFwd);
+
+        double pushRight, pushFwd;
+        if (dist > 0) {
+            if (dist >= r) return;
+            pushRight = -offRight / dist * (r - dist);
+            pushFwd = -offFwd / dist * (r - dist);
+        } else {
+            // center is inside the robot, leave through the closest side
+            double toSide = hw - Math.abs(right), toEnd = hl - Math.abs(fwd);
+            pushRight = toSide < toEnd ? -Math.signum(right) * (toSide + r) : 0;
+            pushFwd = toSide < toEnd ? 0 : -Math.signum(fwd) * (toEnd + r);
         }
+        x += pushRight * cos + pushFwd * sin;
+        y += -pushRight * sin + pushFwd * cos;
     }
 
     /** Turret angle from the servo, assuming a 180 degree servo centered on the robot front */

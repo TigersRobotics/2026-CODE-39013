@@ -7,12 +7,24 @@ public class Gamepad {
     public boolean left_bumper, right_bumper;
     public boolean a, b, x, y;
     public boolean dpad_up, dpad_down, dpad_left, dpad_right;
+    public boolean back, start, guide, left_stick_button, right_stick_button, touchpad;
+
+    // PlayStation names, the SDK keeps these the same as a, b, x, y, back, start
+    public boolean cross, circle, square, triangle, share, options, ps;
 
     private boolean lastLeftBumper, lastRightBumper, lastDpadUp, lastDpadDown;
     private boolean leftBumperPressed, rightBumperPressed, dpadUpPressed, dpadDownPressed;
 
     /** The sim calls this after setting the fields each frame, like the SDK does for new gamepad data */
     public void latchPresses() {
+        cross = a;
+        circle = b;
+        square = x;
+        triangle = y;
+        share = back;
+        options = start;
+        ps = guide;
+
         if (left_bumper && !lastLeftBumper) leftBumperPressed = true;
         if (right_bumper && !lastRightBumper) rightBumperPressed = true;
         if (dpad_up && !lastDpadUp) dpadUpPressed = true;

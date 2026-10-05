@@ -19,7 +19,7 @@ public class SimTests {
             SimSession s = session();
             s.gamepad1.left_stick_y = -1;
             s.run(1);
-            check(s.robot.y > 50, "moved forward, y = " + s.robot.y);
+            check(s.robot.y > 0.8 * SimRobot.MAX_SPEED, "moved forward, y = " + s.robot.y);
             near(s.robot.x, 0, 0.01, "no sideways drift");
             near(s.robot.heading, 0, 0.001, "no turning");
             check(s.robot.wheelFL() > 0 && s.robot.wheelFR() > 0 && s.robot.wheelBL() > 0 && s.robot.wheelBR() > 0,
@@ -30,14 +30,14 @@ public class SimTests {
             SimSession s = session();
             s.gamepad1.left_stick_y = 1;
             s.run(1);
-            check(s.robot.y < -50, "moved backward, y = " + s.robot.y);
+            check(s.robot.y < -0.8 * SimRobot.MAX_SPEED, "moved backward, y = " + s.robot.y);
         });
 
         test("left stick right strafes right", () -> {
             SimSession s = session();
             s.gamepad1.left_stick_x = 1;
             s.run(1);
-            check(s.robot.x > 50, "moved right, x = " + s.robot.x);
+            check(s.robot.x > 0.8 * SimRobot.MAX_SPEED, "moved right, x = " + s.robot.x);
             near(s.robot.y, 0, 0.01, "no forward drift");
             near(s.robot.heading, 0, 0.001, "no turning");
         });
@@ -149,7 +149,40 @@ public class SimTests {
             SimSession s = new SimSession(robot);
             s.gamepad1.left_stick_x = -1;
             s.run(3);
-            near(robot.x, -SimRobot.FIELD_SIZE / 2 + SimRobot.ROBOT_SIZE / 2, 0.01, "against left wall");
+            near(robot.x, -Field.HALF + SimRobot.ROBOT_WIDTH / 2, 0.01, "against left wall");
+        });
+
+        test("starts touching the wall on the red side, outside the LOADING ZONE", () -> {
+            SimRobot robot = SimRobot.atStart(true);
+            near(robot.x - SimRobot.ROBOT_LENGTH / 2, -Field.HALF, 1e-9, "touching the red wall");
+            check(robot.y + SimRobot.ROBOT_WIDTH / 2 < Field.RED_LOADING_ZONE[1], "below the LOADING ZONE");
+        });
+
+        test("HIVE legs block the robot", () -> {
+            // drive right along the HIVE edge, straight at a leg
+            SimRobot robot = new SimRobot(-50, Field.HIVE_DEPTH / 2, 0);
+            SimSession s = new SimSession(robot);
+            s.gamepad1.left_stick_x = 1;
+            s.run(2);
+            check(robot.x < -Field.HIVE_WIDTH / 2, "stopped at the leg, x = " + robot.x);
+        });
+
+        test("robot can drive under the HIVE between the legs", () -> {
+            SimRobot robot = new SimRobot(0, -50, 0);
+            SimSession s = new SimSession(robot);
+            s.gamepad1.left_stick_y = -1;
+            s.run(1.2);
+            check(robot.y > 0, "made it under the HIVE, y = " + robot.y);
+            near(robot.x, 0, 0.01, "did not get pushed sideways");
+        });
+
+        test("FLOWERS block the robot", () -> {
+            // drive along the audience wall into the FLOWER there
+            SimRobot robot = new SimRobot(0, -Field.HALF + 9, 0);
+            SimSession s = new SimSession(robot);
+            s.gamepad1.left_stick_x = 1;
+            s.run(2);
+            check(robot.x < Field.FLOWERS[3][0], "stopped at the FLOWER, x = " + robot.x);
         });
 
         System.out.println();
