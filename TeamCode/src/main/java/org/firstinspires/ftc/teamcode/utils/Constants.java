@@ -17,6 +17,11 @@ public final class Constants {
     public static final double APRIL_TAG_HIVE_OFFSET_H = 0;
     public static final double APRIL_TAG_HIVE_OFFSET_D = 0;
 
+    public static final String FRONT_LEFT_MOTOR_NAME = "frontLeft";
+    public static final String FRONT_RIGHT_MOTOR_NAME = "frontRight";
+    public static final String BACK_LEFT_MOTOR_NAME = "backLeft";
+    public static final String BACK_RIGHT_MOTOR_NAME = "backRight";
+
     /**
      * Scales a number to an exponent, but keeps the sign of the number
      * e.g., expo(2, 2) = 4, expo(-2, 2) = -4

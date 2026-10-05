@@ -21,7 +21,7 @@ public class VectorMath {
             return rotateVector(x, y, Math.toRadians(angle));
         }
     }
-
+    
 
     public static double[] shotAngle(double d, double h, double r, double camAngle, Telemetry telemetry) {
 /// returns turret vertical angle, and the horizonal angle. Input angleFromTag: facing right is pos
