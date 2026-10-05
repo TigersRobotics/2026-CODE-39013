@@ -1,5 +1,5 @@
 #!/bin/sh
-# ./sim.sh           open the sim window
+# ./sim.sh           start the sim and open it in the browser
 # ./sim.sh test      run the drive tests
 # Compiles the sim together with the real TeamCode files it runs
 cd "$(dirname "$0")"
@@ -20,5 +20,6 @@ rm -rf out
 if [ "$1" = "test" ]; then
     "$BIN/java" -cp out sim.SimTests
 else
-    "$BIN/java" -cp out sim.SimWindow "$@"
+    (sleep 1 && open "http://localhost:8039" 2>/dev/null || xdg-open "http://localhost:8039" 2>/dev/null) &
+    "$BIN/java" -cp out sim.SimServer
 fi
