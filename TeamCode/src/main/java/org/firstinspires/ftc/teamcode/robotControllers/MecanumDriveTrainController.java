@@ -27,6 +27,12 @@ public class MecanumDriveTrainController {
     private double driveX;
     private double turn;
 
+    /**
+     * The speed levels the driver can switch between (fraction of full power)
+     */
+    private static final double[] SPEED_LEVELS = {0.25, 0.5, 0.75, 1.0};
+    private int speedLevel = SPEED_LEVELS.length - 1;
+
     public MecanumDriveTrainController(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
@@ -69,40 +75,7 @@ public class MecanumDriveTrainController {
      * Moves based off the values of driveY, driveX, and turn, set by updateDrive and updateTurn
      */
     public void updateMovement() {
-        telemetry.addData("driveY: ", driveY);
-        telemetry.addData("driveX: ", driveX);
-        telemetry.addData("turn: ", turn);
-
-        double fl = driveY + driveX + turn;
-        double fr = driveY - driveX - turn;
-        double bl = driveY - driveX + turn;
-        double br = driveY + driveX - turn;
-
-        double max = Math.max(Math.max(Math.abs(fl), Math.abs(fr)), Math.max(Math.abs(bl), Math.abs(br)));
-
-        if (max > 1.0) {
-            fl /= max;
-            fr /= max;
-            bl /= max;
-            br /= max;
-        }
-
-
-        frontLeftPower = fl;
-        frontRightPower = fr;
-        backRightPower = br;
-        backLeftPower = bl;
-
-        // Send calculated power to wheels
-        frontLeft.setPower(frontLeftPower);
-        frontRight.setPower(frontRightPower);
-        backLeft.setPower(backLeftPower);
-        backRight.setPower(backRightPower);
-
-
-        telemetry.addData("Motors", "front left (%.2f), front right (%.2f)", frontLeftPower, frontRightPower);
-        telemetry.addData("Motors", "back left (%.2f), back right (%.2f)", backLeftPower, backRightPower);
-
+        updateMovement(driveY, driveX, turn);
     }
 
     /**
@@ -130,6 +103,11 @@ public class MecanumDriveTrainController {
             br /= max;
         }
 
+        double speed = getSpeed();
+        fl *= speed;
+        fr *= speed;
+        bl *= speed;
+        br *= speed;
 
         frontLeftPower = fl;
         frontRightPower = fr;
@@ -145,7 +123,29 @@ public class MecanumDriveTrainController {
 
         telemetry.addData("Motors", "front left (%.2f), front right (%.2f)", frontLeftPower, frontRightPower);
         telemetry.addData("Motors", "back left (%.2f), back right (%.2f)", backLeftPower, backRightPower);
+        telemetry.addData("Speed", "%.0f%%", speed * 100);
 
+    }
+
+    /**
+     * Goes up one speed level, stops at full speed
+     */
+    public void increaseSpeed() {
+        speedLevel = Math.min(speedLevel + 1, SPEED_LEVELS.length - 1);
+    }
+
+    /**
+     * Goes down one speed level, stops at the slowest level
+     */
+    public void decreaseSpeed() {
+        speedLevel = Math.max(speedLevel - 1, 0);
+    }
+
+    /**
+     * @return the current speed multiplier (0-1)
+     */
+    public double getSpeed() {
+        return SPEED_LEVELS[speedLevel];
     }
 
 }
