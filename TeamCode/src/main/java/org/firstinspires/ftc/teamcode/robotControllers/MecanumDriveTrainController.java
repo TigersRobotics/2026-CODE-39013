@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.robotControllers;
 
+import static org.firstinspires.ftc.teamcode.utils.Constants.BACK_LEFT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.utils.Constants.BACK_RIGHT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.utils.Constants.FRONT_LEFT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.utils.Constants.FRONT_RIGHT_MOTOR_NAME;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -36,10 +41,10 @@ public class MecanumDriveTrainController {
     public MecanumDriveTrainController(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        frontLeft = hardwareMap.get(DcMotor.class, FRONT_LEFT_MOTOR_NAME);
+        frontRight = hardwareMap.get(DcMotor.class, FRONT_RIGHT_MOTOR_NAME);
+        backLeft = hardwareMap.get(DcMotor.class, BACK_LEFT_MOTOR_NAME);
+        backRight = hardwareMap.get(DcMotor.class, BACK_RIGHT_MOTOR_NAME);
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
