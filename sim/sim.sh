@@ -14,6 +14,7 @@ TEAM=../TeamCode/src/main/java/org/firstinspires/ftc/teamcode
 rm -rf out
 "$BIN/javac" -d out $(find stubs src -name '*.java') \
     $TEAM/ControllerTest.java \
+    $TEAM/utils/Constants.java \
     $TEAM/robotControllers/MecanumDriveTrainController.java \
     $TEAM/robotControllers/TurretController.java || exit 1
 

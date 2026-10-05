@@ -2,6 +2,8 @@ package sim;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.utils.Constants;
+
 /**
  * Physics for our mecanum robot on the BIOBUZZ field.
  * Field coords are inches from the center (see Field). Heading is clockwise from +y, in radians.
@@ -49,10 +51,10 @@ public class SimRobot {
     /** Hardware names have to match the robot config and what the robot code asks for */
     public HardwareMap buildHardwareMap() {
         HardwareMap map = new HardwareMap();
-        map.put("frontLeft", frontLeft);
-        map.put("frontRight", frontRight);
-        map.put("backLeft", backLeft);
-        map.put("backRight", backRight);
+        map.put(Constants.FRONT_LEFT_MOTOR_NAME, frontLeft);
+        map.put(Constants.FRONT_RIGHT_MOTOR_NAME, frontRight);
+        map.put(Constants.BACK_LEFT_MOTOR_NAME, backLeft);
+        map.put(Constants.BACK_RIGHT_MOTOR_NAME, backRight);
         map.put("flywheel", flywheel);
         map.put("0", turretLeft);
         map.put("1", turretRight);
