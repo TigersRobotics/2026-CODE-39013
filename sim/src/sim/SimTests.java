@@ -130,18 +130,38 @@ public class SimTests {
 
         test("driving does not move the turret", () -> {
             SimSession s = session();
+            s.tick();
             double before = s.robot.turretLeft.getPosition();
             s.gamepad1.left_stick_x = 1;
             s.run(0.2);
             near(s.robot.turretLeft.getPosition(), before, 1e-9, "turret stays put");
         });
 
-        test("gamepad 2 left stick moves the turret", () -> {
+        test("turret is centered with the stick centered", () -> {
             SimSession s = session();
-            s.gamepad2.left_stick_x = 0.25f;
             s.tick();
-            near(s.robot.turretLeft.getPosition(), 0.5, 1e-6, "left servo");
-            near(s.robot.turretRight.getPosition(), 0.5, 1e-6, "right servo");
+            near(s.robot.turretLeft.getPosition(), 0.5, 1e-9, "left servo centered");
+            near(s.robot.turretRight.getPosition(), 0.5, 1e-9, "right servo centered");
+        });
+
+        test("gamepad 2 left stick turns the turret both ways", () -> {
+            SimSession s = session();
+            s.gamepad2.left_stick_x = 0.5f;
+            s.tick();
+            near(s.robot.turretLeft.getPosition(), 0.75, 1e-6, "half right");
+            s.gamepad2.left_stick_x = -0.5f;
+            s.tick();
+            near(s.robot.turretLeft.getPosition(), 0.25, 1e-6, "half left");
+        });
+
+        test("full turret stick uses the whole servo range without clamping", () -> {
+            SimSession s = session();
+            s.gamepad2.left_stick_x = 1;
+            s.tick();
+            near(s.robot.turretLeft.getLastRequested(), 1, 1e-6, "full right asks for exactly 1");
+            s.gamepad2.left_stick_x = -1;
+            s.tick();
+            near(s.robot.turretLeft.getLastRequested(), 0, 1e-6, "full left asks for exactly 0");
         });
 
         test("robot stops at the field wall", () -> {
