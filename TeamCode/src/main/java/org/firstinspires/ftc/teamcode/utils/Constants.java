@@ -20,6 +20,11 @@ public final class Constants {
     public static final double OFFSETS_OF_ODOMETRY_PODS_MM_Y = -100;
 
 
+    public static final String FRONT_LEFT_MOTOR_NAME = "frontLeft";
+    public static final String FRONT_RIGHT_MOTOR_NAME = "frontRight";
+    public static final String BACK_LEFT_MOTOR_NAME = "backLeft";
+    public static final String BACK_RIGHT_MOTOR_NAME = "backRight";
+
     /**
      * Scales a number to an exponent, but keeps the sign of the number
      * e.g., expo(2, 2) = 4, expo(-2, 2) = -4
