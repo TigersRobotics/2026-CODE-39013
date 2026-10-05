@@ -6,16 +6,19 @@ public final class Constants {
     // Really, we haven't built most of the robot yet
 
     // Ball speed is currently a temp value;
-    public static final double BALL_SPEED = 0;
+    public static final double BALL_SPEED = 10;
     // The Camera/Turret offset is a temp value;
-    public static final double CAMERA_TURRET_OFFSET= 0;
-
+    public static final double[] CAMERA_TURRET_OFFSET= new double[]{};
     // temp values
-    public static final double MAX_TURRET_ANGLE_UP = 0;
-    public static final double MAX_TURRET_ANGLE_DOWN = 0;
+    public static final double MAX_TURRET_ANGLE_UP = 75;
+    public static final double MAX_TURRET_ANGLE_DOWN = 15;
 
-    public static final double APRIL_TAG_HIVE_OFFSET_H = 0;
-    public static final double APRIL_TAG_HIVE_OFFSET_D = 0;
+    public static final double APRIL_TAG_HIVE_OFFSET_H = 1;
+    public static final double APRIL_TAG_HIVE_OFFSET_D = 1;
+
+    public static final double OFFSETS_OF_ODOMETRY_PODS_MM_X = -100;
+    public static final double OFFSETS_OF_ODOMETRY_PODS_MM_Y = -100;
+
 
     /**
      * Scales a number to an exponent, but keeps the sign of the number
