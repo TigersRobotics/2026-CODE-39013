@@ -25,7 +25,7 @@ public class ControllerTest extends OpMode {
     public void loop() {
 
         if(ENABLE_TURRET_CONTROLLER) {
-            turretController.setTurretPosition(gamepad2.left_stick_x*Math.PI, true);
+            turretController.setTurretPosition(gamepad2.left_stick_x*Math.PI/2, true);
         }
 
         if(ENABLE_DRIVE_CONTROLLER) {

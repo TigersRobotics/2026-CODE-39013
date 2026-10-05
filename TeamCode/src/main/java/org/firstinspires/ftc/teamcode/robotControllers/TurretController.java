@@ -50,8 +50,10 @@ public class TurretController {
             newAngle = Math.toRadians(angle);
         }
 
-        setPositionRads(leftServo, newAngle);
-        setPositionRads(rightServo, newAngle);
+        // 0 is straight ahead, -pi/2 is full left, pi/2 is full right (180 degree servo, centered at 0.5)
+        double position = 0.5 + newAngle/Math.PI;
+        leftServo.setPosition(position);
+        rightServo.setPosition(position);
     }
 
     public void setHoodAngle(double angle, boolean isRadians) {
