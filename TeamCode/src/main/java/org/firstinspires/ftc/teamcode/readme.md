@@ -7,3 +7,9 @@ and then make the class extend OpMode or LinearOpMode
 create methods
 
 Code
+
+
+
+11/11/2026:
+
+Auto code is in pedro/ auto.java
