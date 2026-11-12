@@ -19,11 +19,15 @@ public final class Constants {
     public static final double OFFSETS_OF_ODOMETRY_PODS_MM_X = -100;
     public static final double OFFSETS_OF_ODOMETRY_PODS_MM_Y = -100;
 
-
+// the motor mapping below ->
     public static final String FRONT_LEFT_MOTOR_NAME = "frontLeft";
     public static final String FRONT_RIGHT_MOTOR_NAME = "frontRight";
     public static final String BACK_LEFT_MOTOR_NAME = "backLeft";
     public static final String BACK_RIGHT_MOTOR_NAME = "backRight";
+    public static final String INTAKE_MOTOR_NAME = "intake";
+    public static final String UPTAKE_MOTOR_NAME = "uptake";
+    public static final String SHOOTER_MOTOR_NAME = "shooter";
+
 
     /**
      * Scales a number to an exponent, but keeps the sign of the number
