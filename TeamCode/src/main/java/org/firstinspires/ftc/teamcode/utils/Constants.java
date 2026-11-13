@@ -6,6 +6,9 @@ public final class Constants {
     // Really, we haven't built most of the robot yet
 
     // Ball speed is currently a temp value;
+    public static float INTAKE_SPEED = 4;
+    public static float UPTAKE_SPEED = 6;
+    public static float SHOOTER_SPEED = 12;
     public static final double BALL_SPEED = 10;
     // The Camera/Turret offset is a temp value;
     public static final double[] CAMERA_TURRET_OFFSET= new double[]{};
