@@ -1,5 +1,9 @@
 package sim;
 
+import org.firstinspires.ftc.teamcode.robotControllers.MecanumDriveTrainController;
+import org.firstinspires.ftc.teamcode.utils.TimedTelemetry;
+import org.firstinspires.ftc.teamcode.utils.Timer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -203,6 +207,57 @@ public class SimTests {
             s.gamepad1.left_stick_x = 1;
             s.run(2);
             check(robot.x < Field.FLOWERS[3][0], "stopped at the FLOWER, x = " + robot.x);
+        });
+
+        test("stopping the drivetrain zeroes the motors", () -> {
+            SimSession s = session();
+            s.gamepad1.left_stick_y = -1;
+            s.tick();
+            check(s.robot.wheelFL() > 0, "driving before stop");
+            s.stop();
+            near(s.robot.frontLeft.getPower(), 0, 1e-9, "front left stopped");
+            near(s.robot.backRight.getPower(), 0, 1e-9, "back right stopped");
+        });
+
+        test("drivetrain stop and disabled init are safe without hardware", () -> {
+            MecanumDriveTrainController.stop();
+            MecanumDriveTrainController.stop();
+            MecanumDriveTrainController.init(new SimRobot(0, 0, 0).buildHardwareMap(), false);
+            check(!MecanumDriveTrainController.isInitialized, "drivetrain stays off");
+        });
+
+        test("timed telemetry stays small over a long run", () -> {
+            SimSession s = session();
+            s.gamepad1.left_stick_y = -1;
+            s.run(20);
+            check(TimedTelemetry.getTelemetryListAsStrings().size() < 30,
+                    "lines are removed, " + TimedTelemetry.getTelemetryListAsStrings().size() + " left");
+        });
+
+        test("a new OpMode run starts with clean telemetry", () -> {
+            session();
+            TimedTelemetry.addLineForever("left over from the last run");
+            SimSession s = session();
+            s.run(0.2);
+            check(!s.telemetry.getHistory().contains("left over from the last run"), "old line is gone");
+        });
+
+        test("timer triggers fire after their delay", () -> {
+            session();
+            Timer.init();
+            boolean[] fired = new boolean[2];
+            Timer.addTrigger(100, () -> {
+                fired[0] = true;
+                Timer.addTrigger(40, () -> fired[1] = true);
+            });
+            for (int i = 0; i < 4; i++) { SimClock.advance(0.02); Timer.update(); }
+            check(!fired[0], "not fired at 80 ms");
+            SimClock.advance(0.02);
+            Timer.update();
+            check(fired[0], "fired at 100 ms");
+            for (int i = 0; i < 2; i++) { SimClock.advance(0.02); Timer.update(); }
+            check(fired[1], "a trigger can add another trigger");
+            check(Timer.getTriggerCount() == 0, "finished triggers are removed");
         });
 
         System.out.println();

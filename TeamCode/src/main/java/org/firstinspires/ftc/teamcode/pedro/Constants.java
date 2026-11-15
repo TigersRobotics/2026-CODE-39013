@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.pedro;
 
-import static org.firstinspires.ftc.teamcode.utils.Constants.BACK_LEFT_MOTOR_NAME;
-import static org.firstinspires.ftc.teamcode.utils.Constants.BACK_RIGHT_MOTOR_NAME;
-import static org.firstinspires.ftc.teamcode.utils.Constants.FRONT_LEFT_MOTOR_NAME;
-import static org.firstinspires.ftc.teamcode.utils.Constants.FRONT_RIGHT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.constants.HardwareNames.BACK_LEFT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.constants.HardwareNames.BACK_RIGHT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.constants.HardwareNames.FRONT_LEFT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.constants.HardwareNames.FRONT_RIGHT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.constants.HardwareNames.ODOMETRY_NAME;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.revhub.drivetrains.MecanumConfig;
@@ -35,7 +36,7 @@ public class Constants {
     // The Pinpoint computer reads two odometry pods to estimate robot position.
     public static PinpointConfig localizerConfig = new PinpointConfig(c -> {
         // TODO: Match the Pinpoint device name in your robot configuration.
-        c.name.set("pinpoint");
+        c.name.set(ODOMETRY_NAME);
 
         // Matches the pod type in TwoWheelOdometry. The computer model alone
         // does not determine pod type: confirm which pods are attached.
@@ -55,7 +56,7 @@ public class Constants {
         // Each offset is the signed perpendicular distance from the robot's
         // center of rotation to that pod's measurement line. PinpointTuner
         // calculates these values, including their signs, in inches.
-        // Do not copy the millimetre values from utils.Constants directly.
+        // Do not copy the millimetre values from RobotSpecs directly.
         c.xPodOffset.set(0.0);
         c.yPodOffset.set(0.0);
     });

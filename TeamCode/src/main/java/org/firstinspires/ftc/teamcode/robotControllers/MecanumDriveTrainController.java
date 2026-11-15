@@ -1,156 +1,134 @@
 package org.firstinspires.ftc.teamcode.robotControllers;
 
-import static org.firstinspires.ftc.teamcode.utils.Constants.BACK_LEFT_MOTOR_NAME;
-import static org.firstinspires.ftc.teamcode.utils.Constants.BACK_RIGHT_MOTOR_NAME;
-import static org.firstinspires.ftc.teamcode.utils.Constants.FRONT_LEFT_MOTOR_NAME;
-import static org.firstinspires.ftc.teamcode.utils.Constants.FRONT_RIGHT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.constants.HardwareNames.BACK_LEFT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.constants.HardwareNames.BACK_RIGHT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.constants.HardwareNames.FRONT_LEFT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.constants.HardwareNames.FRONT_RIGHT_MOTOR_NAME;
+import static org.firstinspires.ftc.teamcode.constants.TuningConstants.DRIVE_SPEED_LEVELS;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.controller.CustomController;
+import org.firstinspires.ftc.teamcode.utils.TimedTelemetry;
 
+public class MecanumDriveTrainController{
+    public static boolean isInitialized = false;
+    private static DcMotor frontLeft;
+    private static DcMotor frontRight;
+    private static DcMotor backLeft;
+    private static DcMotor backRight;
+    private static double frontLeftPower;
+    private static double frontRightPower;
+    private static double backLeftPower;
+    private static double backRightPower;
+    private static int speedLevel = DRIVE_SPEED_LEVELS.length - 1;
 
-/**
- * This class is used to control the mecanum drivetrain
- * @author Cole L
- * @version 1.0
- */
-public class MecanumDriveTrainController {
-    private DcMotor frontLeft;
-    private DcMotor frontRight;
-    private DcMotor backLeft;
-    private DcMotor backRight;
+    public static void init(HardwareMap hardwareMap, boolean actuallyInitialize) {
+        if(actuallyInitialize) {
 
-    private Telemetry telemetry;
-    private double frontLeftPower;
-    private double frontRightPower;
-    private double backLeftPower;
-    private double backRightPower;
+            frontLeft = hardwareMap.get(DcMotor.class, FRONT_LEFT_MOTOR_NAME);
+            frontRight = hardwareMap.get(DcMotor.class, FRONT_RIGHT_MOTOR_NAME);
+            backLeft = hardwareMap.get(DcMotor.class, BACK_LEFT_MOTOR_NAME);
+            backRight = hardwareMap.get(DcMotor.class, BACK_RIGHT_MOTOR_NAME);
 
-    private double driveY;
-    private double driveX;
-    private double turn;
+            frontLeft.setDirection(DcMotor.Direction.REVERSE);
+            backLeft.setDirection(DcMotor.Direction.REVERSE);
+            frontRight.setDirection(DcMotor.Direction.FORWARD);
+            backRight.setDirection(DcMotor.Direction.FORWARD);
 
-    /**
-     * The speed levels the driver can switch between (fraction of full power)
-     */
-    private static final double[] SPEED_LEVELS = {0.25, 0.5, 0.75, 1.0};
-    private int speedLevel = SPEED_LEVELS.length - 1;
+            speedLevel = DRIVE_SPEED_LEVELS.length - 1;
 
-    public MecanumDriveTrainController(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.telemetry = telemetry;
+            TimedTelemetry.addLine("MECANUM DRIVE TRAIN INITIALIZED");
 
-        frontLeft = hardwareMap.get(DcMotor.class, FRONT_LEFT_MOTOR_NAME);
-        frontRight = hardwareMap.get(DcMotor.class, FRONT_RIGHT_MOTOR_NAME);
-        backLeft = hardwareMap.get(DcMotor.class, BACK_LEFT_MOTOR_NAME);
-        backRight = hardwareMap.get(DcMotor.class, BACK_RIGHT_MOTOR_NAME);
-
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-
-        telemetry.addLine("MECANUM DRIVE TRAIN INITIALIZED");
-
+            isInitialized = true;
+        } else stop();
     }
 
-    /**
-     * Updates the turn value
-     * @param turn
-     * does not actually update the movement. updateMovement must be called to update
-     */
-    public void updateTurn(double turn) {
-        this.turn = turn;
+    public static void init(HardwareMap hardwareMap) {
+        init(hardwareMap, true);
     }
 
-    /**
-     * Updates the drive values
-     * @param driveY drive in accordance to the front of the robot
-     * @param driveX drive in accordance to the right of the robot
-     * does not actually update the movement. updateMovement must be called to update
-     */
-    public void updateDrive(double driveY, double driveX) {
-        this.driveY = driveY;
-        this.driveX = driveX;
+    public static void stop() {
+        if (frontLeft != null) frontLeft.setPower(0);
+        if (frontRight != null) frontRight.setPower(0);
+        if (backLeft != null) backLeft.setPower(0);
+        if (backRight != null) backRight.setPower(0);
+
+        isInitialized = false;
+        frontLeft = null;
+        frontRight = null;
+        backLeft = null;
+        backRight = null;
+        frontLeftPower = 0;
+        frontRightPower = 0;
+        backLeftPower = 0;
+        backRightPower = 0;
+        speedLevel = DRIVE_SPEED_LEVELS.length - 1;
     }
 
-    /**
-     * Starts the movement of the robot.
-     * Moves based off the values of driveY, driveX, and turn, set by updateDrive and updateTurn
-     */
-    public void updateMovement() {
-        updateMovement(driveY, driveX, turn);
+    public static void update(double driveY, double driveX) {
+        update(driveY,driveX, 0);
     }
 
-    /**
-     * Starts the movement of the robot. Can be used instead of using updateDrive() and updateTurn()
-     * @param driveY drive in accordance to the front of the robot
-     * @param driveX drive in accordance to the right of the robot
-     * @param turn turn in the clockwise direction(0-1)
-     */
-    public void updateMovement(double driveY, double driveX, double turn) {
-        telemetry.addData("driveY: ", driveY);
-        telemetry.addData("driveX: ", driveX);
-        telemetry.addData("turn: ", turn);
-
-        double fl = driveY + driveX + turn;
-        double fr = driveY - driveX - turn;
-        double bl = driveY - driveX + turn;
-        double br = driveY + driveX - turn;
-
-        double max = Math.max(Math.max(Math.abs(fl), Math.abs(fr)), Math.max(Math.abs(bl), Math.abs(br)));
-
-        if (max > 1.0) {
-            fl /= max;
-            fr /= max;
-            bl /= max;
-            br /= max;
-        }
-
-        double speed = getSpeed();
-        fl *= speed;
-        fr *= speed;
-        bl *= speed;
-        br *= speed;
-
-        frontLeftPower = fl;
-        frontRightPower = fr;
-        backRightPower = br;
-        backLeftPower = bl;
-
-        // Send calculated power to wheels
-        frontLeft.setPower(frontLeftPower);
-        frontRight.setPower(frontRightPower);
-        backLeft.setPower(backLeftPower);
-        backRight.setPower(backRightPower);
-
-
-        telemetry.addData("Motors", "front left (%.2f), front right (%.2f)", frontLeftPower, frontRightPower);
-        telemetry.addData("Motors", "back left (%.2f), back right (%.2f)", backLeftPower, backRightPower);
-        telemetry.addData("Speed", "%.0f%%", speed * 100);
-
+    public static void update() {
+        update(0, 0, 0);
     }
 
-    /**
-     * Goes up one speed level, stops at full speed
-     */
-    public void increaseSpeed() {
-        speedLevel = Math.min(speedLevel + 1, SPEED_LEVELS.length - 1);
+    public static void update(double driveY, double driveX, double turn) {
+        if(isInitialized) {
+            TimedTelemetry.addData("driveY: ", driveY);
+            TimedTelemetry.addData("driveX: ", driveX);
+            TimedTelemetry.addData("turn: ", turn);
+
+            double fl = driveY + driveX + turn;
+            double fr = driveY - driveX - turn;
+            double bl = driveY - driveX + turn;
+            double br = driveY + driveX - turn;
+
+            double max = Math.max(Math.max(Math.abs(fl), Math.abs(fr)), Math.max(Math.abs(bl), Math.abs(br)));
+
+            if (max > 1.0) {
+                fl /= max;
+                fr /= max;
+                bl /= max;
+                br /= max;
+            }
+
+            double speed = getSpeed();
+
+            frontLeftPower = fl * speed;
+            frontRightPower = fr * speed;
+            backRightPower = br * speed;
+            backLeftPower = bl * speed;
+
+            frontLeft.setPower(frontLeftPower);
+            frontRight.setPower(frontRightPower);
+            backLeft.setPower(backLeftPower);
+            backRight.setPower(backRightPower);
+
+            TimedTelemetry.addData("Motors", "front left (%.2f), front right (%.2f)", 1, frontLeftPower, frontRightPower);
+            TimedTelemetry.addData("Motors", "back left (%.2f), back right (%.2f)", 1, backLeftPower, backRightPower);
+            TimedTelemetry.addData("Speed", "%.0f%%", 1, speed * 100);
+        } else TimedTelemetry.addLine("Drivetrain being updated but not initialized!");
+    }
+    public static void update(CustomController controller) {
+        update(controller.getDriveY(), controller.getDriveX(), controller.getTurn());
     }
 
-    /**
-     * Goes down one speed level, stops at the slowest level
-     */
-    public void decreaseSpeed() {
+    public static void increaseSpeed() {
+        speedLevel = Math.min(speedLevel + 1, DRIVE_SPEED_LEVELS.length - 1);
+    }
+
+    public static void decreaseSpeed() {
         speedLevel = Math.max(speedLevel - 1, 0);
     }
 
-    /**
-     * @return the current speed multiplier (0-1)
-     */
-    public double getSpeed() {
-        return SPEED_LEVELS[speedLevel];
+    public static double getSpeed() {
+        return DRIVE_SPEED_LEVELS[speedLevel];
     }
 
+    public static double[] getPowers() {
+        return new double[]{frontLeftPower, frontRightPower, backLeftPower, backRightPower};
+    }
 }

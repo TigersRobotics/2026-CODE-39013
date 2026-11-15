@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.ControllerTest;
 
-/** Runs a real team OpMode against the simulated robot */
 public class SimSession {
     public static final double LOOP_TIME = 0.02;
 
@@ -28,15 +27,16 @@ public class SimSession {
         opMode.gamepad1 = gamepad1;
         opMode.gamepad2 = gamepad2;
         opMode.init();
-        telemetry.update();
+        telemetry.updateIfDirty();
         opMode.start();
     }
 
-    /** One robot loop: new gamepad data, run the OpMode, move the robot */
     public void tick() {
+        SimClock.advance(LOOP_TIME);
         gamepad1.latchPresses();
         gamepad2.latchPresses();
         opMode.loop();
+        telemetry.updateIfDirty();
         robot.step(LOOP_TIME);
         time += LOOP_TIME;
     }
@@ -46,11 +46,14 @@ public class SimSession {
         for (int i = 0; i < loops; i++) tick();
     }
 
-    /** Presses and releases a button over two loops */
     public void tap(Runnable press, Runnable release) {
         press.run();
         tick();
         release.run();
         tick();
+    }
+
+    public void stop() {
+        opMode.stop();
     }
 }

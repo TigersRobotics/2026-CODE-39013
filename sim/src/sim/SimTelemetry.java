@@ -5,7 +5,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Collects telemetry like the Driver Station screen would show it */
 public class SimTelemetry implements Telemetry {
     private final List<String> pending = new ArrayList<>();
     private List<String> shown = new ArrayList<>();
@@ -19,6 +18,10 @@ public class SimTelemetry implements Telemetry {
         shown = new ArrayList<>(pending);
         pending.clear();
         return true;
+    }
+
+    public void updateIfDirty() {
+        if (!pending.isEmpty()) update();
     }
 
     private void add(String line) {

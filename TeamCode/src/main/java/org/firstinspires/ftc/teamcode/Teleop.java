@@ -8,13 +8,12 @@ import org.firstinspires.ftc.teamcode.robotControllers.MecanumDriveTrainControll
 import org.firstinspires.ftc.teamcode.robotControllers.ShootingSys;
 
 public class Teleop extends OpMode {
-    MecanumDriveTrainController driveTrain;
     ShootingSys shootingSys;
     @Override
     public void init() {
 
 
-        driveTrain = new MecanumDriveTrainController(hardwareMap,telemetry);
+        MecanumDriveTrainController.init(hardwareMap);
         shootingSys = new ShootingSys(hardwareMap,telemetry);
 
     }
@@ -29,7 +28,7 @@ public class Teleop extends OpMode {
         boolean shootPressed = gamepad1.right_trigger_pressed;
 
 
-        driveTrain.updateMovement(leftStickY,leftStickX ,rightStickX);
+        MecanumDriveTrainController.update(leftStickY,leftStickX ,rightStickX);
 
         if(intakePressed){
             shootingSys.updateMoveBallUp(INTAKE_SPEED,UPTAKE_SPEED);

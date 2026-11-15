@@ -2,7 +2,7 @@ package sim;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.utils.Constants;
+import org.firstinspires.ftc.teamcode.constants.HardwareNames;
 
 /**
  * Physics for our mecanum robot on the BIOBUZZ field.
@@ -51,13 +51,13 @@ public class SimRobot {
     /** Hardware names have to match the robot config and what the robot code asks for */
     public HardwareMap buildHardwareMap() {
         HardwareMap map = new HardwareMap();
-        map.put(Constants.FRONT_LEFT_MOTOR_NAME, frontLeft);
-        map.put(Constants.FRONT_RIGHT_MOTOR_NAME, frontRight);
-        map.put(Constants.BACK_LEFT_MOTOR_NAME, backLeft);
-        map.put(Constants.BACK_RIGHT_MOTOR_NAME, backRight);
-        map.put("flywheel", flywheel);
-        map.put("0", turretLeft);
-        map.put("1", turretRight);
+        map.put(HardwareNames.FRONT_LEFT_MOTOR_NAME, frontLeft);
+        map.put(HardwareNames.FRONT_RIGHT_MOTOR_NAME, frontRight);
+        map.put(HardwareNames.BACK_LEFT_MOTOR_NAME, backLeft);
+        map.put(HardwareNames.BACK_RIGHT_MOTOR_NAME, backRight);
+        map.put(HardwareNames.FLYWHEEL_NAME, flywheel);
+        map.put(HardwareNames.TURRET_LEFT_SERVO_NAME, turretLeft);
+        map.put(HardwareNames.TURRET_RIGHT_SERVO_NAME, turretRight);
         return map;
     }
 

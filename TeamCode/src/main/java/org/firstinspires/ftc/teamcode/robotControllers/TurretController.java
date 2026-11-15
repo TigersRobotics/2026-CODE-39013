@@ -6,10 +6,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.constants.HardwareNames;
 
 public class TurretController {
-    private final String SERVO_LEFT = "0";
-    private final String SERVO_RIGHT = "1";
     private Servo leftServo;
     private Servo rightServo;
     private Servo hoodServo;
@@ -18,10 +17,10 @@ public class TurretController {
     private double currentVelocity;
 
     public TurretController (HardwareMap hardwareMap, Telemetry telemetry) {
-        leftServo = hardwareMap.get(Servo.class, SERVO_LEFT);
-        rightServo = hardwareMap.get(Servo.class, SERVO_RIGHT);
+        leftServo = hardwareMap.get(Servo.class, HardwareNames.TURRET_LEFT_SERVO_NAME);
+        rightServo = hardwareMap.get(Servo.class, HardwareNames.TURRET_RIGHT_SERVO_NAME);
 
-        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        flywheel = hardwareMap.get(DcMotorEx.class, HardwareNames.FLYWHEEL_NAME);
         flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         telemetry.addLine("TURRET CONTROLLER INITIALIZED");
