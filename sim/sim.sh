@@ -13,7 +13,7 @@ fi
 TEAM=../TeamCode/src/main/java/org/firstinspires/ftc/teamcode
 rm -rf out
 "$BIN/javac" -d out $(find stubs src -name '*.java') \
-    $TEAM/ControllerTest.java \
+    $TEAM/opmodes/ControllerTest.java \
     $TEAM/constants/HardwareNames.java \
     $TEAM/constants/TuningConstants.java \
     $TEAM/constants/OpModeMethods.java \
@@ -30,6 +30,8 @@ rm -rf out
     $TEAM/opmodes/UptakeServoTest.java \
     $TEAM/robotControllers/TurretUpAngleController.java \
     $TEAM/opmodes/TurretUpDownControllerV1Test.java \
+    $TEAM/robotControllers/LimelightController.java \
+    $TEAM/opmodes/LimelightTest.java \
     $TEAM/utils/UtilMethods.java \
     $TEAM/constants/RobotSpecs.java \
     $TEAM/opmodes/IntakeTest.java \

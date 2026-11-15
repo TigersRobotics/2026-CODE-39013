@@ -1,15 +1,19 @@
 package sim;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.constants.RobotSpecs;
 import org.firstinspires.ftc.teamcode.constants.TuningConstants;
 import org.firstinspires.ftc.teamcode.opmodes.IntakeTest;
+import org.firstinspires.ftc.teamcode.opmodes.LimelightTest;
 import org.firstinspires.ftc.teamcode.opmodes.TurretUpDownControllerV1Test;
 import org.firstinspires.ftc.teamcode.opmodes.UptakeServoTest;
 import org.firstinspires.ftc.teamcode.opmodes.UptakeTest;
 import org.firstinspires.ftc.teamcode.robotControllers.FlywheelController;
+import org.firstinspires.ftc.teamcode.robotControllers.LimelightController;
 import org.firstinspires.ftc.teamcode.robotControllers.MecanumDriveTrainController;
+import org.firstinspires.ftc.teamcode.robotControllers.TurretController;
 import org.firstinspires.ftc.teamcode.robotControllers.TurretUpAngleController;
 import org.firstinspires.ftc.teamcode.robotControllers.UptakeServoController;
 import org.firstinspires.ftc.teamcode.utils.TimedTelemetry;
@@ -167,6 +171,16 @@ public class SimTests {
             s.gamepad2.left_stick_x = -0.5f;
             s.tick();
             near(s.robot.turretLeft.getPosition(), 0.25, 1e-6, "half left");
+        });
+
+        test("turret servos point the same way unless set as mirrored", () -> {
+            SimSession s = session();
+            s.gamepad2.left_stick_x = 0.5f;
+            s.tick();
+            Servo.Direction right = RobotSpecs.TURRET_SERVOS_MIRRORED ? Servo.Direction.REVERSE : Servo.Direction.FORWARD;
+            check(s.robot.turretLeft.getDirection() == Servo.Direction.FORWARD, "left servo forward");
+            check(s.robot.turretRight.getDirection() == right, "right servo direction matches TURRET_SERVOS_MIRRORED");
+            near(s.robot.turretRight.getPosition(), s.robot.turretLeft.getPosition(), 1e-9, "both servos get the same position");
         });
 
         test("full turret stick uses the whole servo range without clamping", () -> {
@@ -346,6 +360,70 @@ public class SimTests {
             near(TurretUpAngleController.getTargetAngle(), RobotSpecs.HOOD_MAX_ANGLE, 1e-9, "stops at the top");
             for (int i = 0; i < 40; i++) s.tap(() -> s.gamepad1.dpad_down = true, () -> s.gamepad1.dpad_down = false);
             near(TurretUpAngleController.getTargetAngle(), RobotSpecs.HOOD_MIN_ANGLE, 1e-9, "stops at the bottom");
+        });
+
+        test("limelight sees the HIVE straight ahead from the start", () -> {
+            SimRobot robot = SimRobot.atStart(true);
+            SimSession s = new SimSession(robot, new LimelightTest());
+            check(robot.limelight.isRunning(), "camera started");
+            s.tick();
+            check(LimelightController.hasTarget(), "target visible");
+            near(LimelightController.getTx(), 0, 0.5, "target centered");
+        });
+
+        test("limelight tx is positive when the target is to the right", () -> {
+            SimRobot robot = SimRobot.atStart(true);
+            robot.heading -= Math.toRadians(10);
+            SimSession s = new SimSession(robot, new LimelightTest());
+            s.tick();
+            near(LimelightController.getTx(), 10, 0.5, "target 10 degrees right");
+        });
+
+        test("limelight has no target when facing away", () -> {
+            SimRobot robot = SimRobot.atStart(true);
+            robot.heading += Math.PI;
+            SimSession s = new SimSession(robot, new LimelightTest());
+            s.tick();
+            check(!LimelightController.hasTarget(), "no target");
+            near(LimelightController.getTx(), 0, 1e-9, "tx reads 0 with no target");
+            check(s.telemetry.getShown().contains("Limelight: no target"), "telemetry says no target");
+        });
+
+        test("dpad tilts the limelight and stop turns it off", () -> {
+            SimRobot robot = SimRobot.atStart(true);
+            SimSession s = new SimSession(robot, new LimelightTest());
+            near(robot.limelightTilt.getPosition(), RobotSpecs.LIMELIGHT_TILT_DEFAULT_POSITION, 1e-9, "starts at default tilt");
+            s.tap(() -> s.gamepad1.dpad_up = true, () -> s.gamepad1.dpad_up = false);
+            near(robot.limelightTilt.getPosition(), RobotSpecs.LIMELIGHT_TILT_DEFAULT_POSITION + TuningConstants.LIMELIGHT_TILT_STEP, 1e-9, "tilted up one step");
+            s.stop();
+            check(!robot.limelight.isRunning(), "camera stopped");
+        });
+
+        test("auto aim turns the turret onto the target", () -> {
+            SimRobot robot = SimRobot.atStart(true);
+            robot.heading -= Math.toRadians(15);
+            SimSession s = new SimSession(robot, new LimelightTest());
+            s.tick();
+            near(LimelightController.getTx(), 15, 0.5, "target starts 15 degrees right");
+            s.tap(() -> s.gamepad1.right_bumper = true, () -> s.gamepad1.right_bumper = false);
+            s.run(1.5);
+            check(Math.abs(LimelightController.getTx()) <= TuningConstants.TURRET_AIM_DEADBAND + 0.1, "target centered, tx = " + LimelightController.getTx());
+            near(TurretController.getCurrentYaw(), 15, TuningConstants.TURRET_AIM_DEADBAND + 0.5, "turret turned right");
+        });
+
+        test("auto aim holds the turret when the target is lost", () -> {
+            SimRobot robot = SimRobot.atStart(true);
+            robot.heading -= Math.toRadians(15);
+            SimSession s = new SimSession(robot, new LimelightTest());
+            s.tap(() -> s.gamepad1.right_bumper = true, () -> s.gamepad1.right_bumper = false);
+            s.run(1.5);
+            double aimed = TurretController.getCurrentYaw();
+            robot.heading += Math.PI;
+            s.run(0.5);
+            check(!LimelightController.hasTarget(), "target lost");
+            near(TurretController.getCurrentYaw(), aimed, 1e-9, "turret holds where it was");
+            s.tap(() -> s.gamepad1.right_bumper = true, () -> s.gamepad1.right_bumper = false);
+            near(TurretController.getCurrentYaw(), 0, 1e-9, "turning auto aim off goes back to the stick");
         });
 
         System.out.println();

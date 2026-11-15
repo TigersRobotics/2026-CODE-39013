@@ -15,4 +15,9 @@ public class TuningConstants {
     public static final double FLYWHEEL_LOW_VELOCITY = 900;
 
     public static final double HOOD_STEP_ANGLE = 5;
+
+    public static final int LIMELIGHT_PIPELINE = 0;
+    public static final double LIMELIGHT_TILT_STEP = 0.05;
+    public static final double TURRET_AIM_GAIN = 0.2;
+    public static final double TURRET_AIM_DEADBAND = 1.0;
 }

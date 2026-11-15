@@ -3,23 +3,16 @@ package sim;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.constants.HardwareNames;
+import org.firstinspires.ftc.teamcode.constants.RobotSpecs;
 
-/**
- * Physics for our mecanum robot on the BIOBUZZ field.
- * Field coords are inches from the center (see Field). Heading is clockwise from +y, in radians.
- */
 public class SimRobot {
-    // Robot specs, change these to match the real robot
     public static final double ROBOT_WIDTH = 18;
     public static final double ROBOT_LENGTH = 18;
     public static final double TRACK_WIDTH = 15;
     public static final double WHEELBASE = 13;
-    // goBILDA 104 mm mecanum wheels on 312 rpm Yellow Jackets
     public static final double WHEEL_DIAMETER = 4.094;
     public static final double MOTOR_RPM = 312;
-    // real robots lose some speed to weight and friction
     public static final double LOAD_FACTOR = 0.85;
-    // how long the robot takes to get up to speed
     public static final double ACCEL_TIME = 0.15;
 
     public static final double MAX_SPEED = MOTOR_RPM / 60 * Math.PI * WHEEL_DIAMETER * LOAD_FACTOR;
@@ -36,10 +29,14 @@ public class SimRobot {
     public final SimServo turretRight = new SimServo();
     public final SimServo kicker = new SimServo();
     public final SimServo hood = new SimServo();
+    public final SimServo limelightTilt = new SimServo();
+    public final SimLimelight limelight = new SimLimelight(this);
 
     public double x, y, heading;
     public double forwardVel, strafeVel, turnVel;
     public boolean collisions = true;
+    public boolean red = true;
+    public double targetX = Field.RED_HIVE_X, targetY = 0;
 
     public SimRobot(double x, double y, double heading) {
         this.x = x;
@@ -49,10 +46,12 @@ public class SimRobot {
 
     public static SimRobot atStart(boolean red) {
         double[] s = Field.start(red);
-        return new SimRobot(s[0], s[1], s[2]);
+        SimRobot robot = new SimRobot(s[0], s[1], s[2]);
+        robot.red = red;
+        robot.targetX = red ? Field.RED_HIVE_X : Field.BLUE_HIVE_X;
+        return robot;
     }
 
-    /** Hardware names have to match the robot config and what the robot code asks for */
     public HardwareMap buildHardwareMap() {
         HardwareMap map = new HardwareMap();
         map.put(HardwareNames.FRONT_LEFT_MOTOR_NAME, frontLeft);
@@ -66,13 +65,11 @@ public class SimRobot {
         map.put(HardwareNames.TURRET_RIGHT_SERVO_NAME, turretRight);
         map.put(HardwareNames.UPTAKE_SERVO_NAME, kicker);
         map.put(HardwareNames.TURRET_UP_ANGLE_SERVO_NAME, hood);
+        map.put(HardwareNames.LIMELIGHT_TILT_SERVO_NAME, limelightTilt);
+        map.put(HardwareNames.LIMELIGHT_NAME, limelight);
         return map;
     }
 
-    /**
-     * How hard each wheel pushes the robot forward.
-     * Left side motors are mounted mirrored, so a FORWARD motor on the left spins its wheel backwards.
-     */
     public double wheelFL() { return -frontLeft.shaftPower(); }
     public double wheelBL() { return -backLeft.shaftPower(); }
     public double wheelFR() { return frontRight.shaftPower(); }
@@ -85,7 +82,6 @@ public class SimRobot {
 
         double fl = wheelFL(), fr = wheelFR(), bl = wheelBL(), br = wheelBR();
 
-        // inverse of the mecanum mixing in MecanumDriveTrainController
         double targetForward = (fl + fr + bl + br) / 4 * MAX_SPEED;
         double targetStrafe = (fl - fr - bl + br) / 4 * MAX_SPEED;
         double targetTurn = (fl - fr + bl - br) / 4 * MAX_SPEED / TURN_RADIUS;
@@ -107,7 +103,6 @@ public class SimRobot {
         for (double[] leg : Field.HIVE_LEGS) pushOutOfCircle(leg[0], leg[1], Field.HIVE_LEG_RADIUS);
         for (double[] flower : Field.FLOWERS) pushOutOfCircle(flower[0], flower[1], Field.FLOWER_RADIUS);
 
-        // perimeter walls, using how far the rotated robot reaches in x and y
         double sin = Math.abs(Math.sin(heading)), cos = Math.abs(Math.cos(heading));
         double reachX = ROBOT_WIDTH / 2 * cos + ROBOT_LENGTH / 2 * sin;
         double reachY = ROBOT_WIDTH / 2 * sin + ROBOT_LENGTH / 2 * cos;
@@ -115,11 +110,9 @@ public class SimRobot {
         y = Math.max(-Field.HALF + reachY, Math.min(Field.HALF - reachY, y));
     }
 
-    /** Moves the robot so its rectangle no longer overlaps a round obstacle */
     private void pushOutOfCircle(double cx, double cy, double r) {
         double sin = Math.sin(heading), cos = Math.cos(heading);
         double dx = cx - x, dy = cy - y;
-        // obstacle center in robot coords, +right and +forward
         double right = dx * cos - dy * sin;
         double fwd = dx * sin + dy * cos;
         double hw = ROBOT_WIDTH / 2, hl = ROBOT_LENGTH / 2;
@@ -135,7 +128,6 @@ public class SimRobot {
             pushRight = -offRight / dist * (r - dist);
             pushFwd = -offFwd / dist * (r - dist);
         } else {
-            // center is inside the robot, leave through the closest side
             double toSide = hw - Math.abs(right), toEnd = hl - Math.abs(fwd);
             pushRight = toSide < toEnd ? -Math.signum(right) * (toSide + r) : 0;
             pushFwd = toSide < toEnd ? 0 : -Math.signum(fwd) * (toEnd + r);
@@ -144,8 +136,7 @@ public class SimRobot {
         y += -pushRight * sin + pushFwd * cos;
     }
 
-    /** Turret angle from the servo, assuming a 180 degree servo centered on the robot front */
     public double turretAngle() {
-        return (turretLeft.getPosition() - 0.5) * Math.PI;
+        return (turretLeft.shaftPosition() - 0.5) * Math.toRadians(RobotSpecs.TURRET_SERVO_RANGE_DEGREES);
     }
 }

@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode.constants;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.robotControllers.FlywheelController;
+import org.firstinspires.ftc.teamcode.robotControllers.LimelightController;
 import org.firstinspires.ftc.teamcode.robotControllers.MecanumDriveTrainController;
 import org.firstinspires.ftc.teamcode.robotControllers.SingleIntakeController;
+import org.firstinspires.ftc.teamcode.robotControllers.TurretController;
 import org.firstinspires.ftc.teamcode.robotControllers.TurretUpAngleController;
 import org.firstinspires.ftc.teamcode.robotControllers.UptakeController;
 import org.firstinspires.ftc.teamcode.robotControllers.UptakeServoController;
@@ -28,7 +30,9 @@ public class OpModeMethods {
                     UptakeController::init,
                     FlywheelController::init,
                     UptakeServoController::init,
-                    TurretUpAngleController::init
+                    TurretUpAngleController::init,
+                    TurretController::init,
+                    LimelightController::init
             )
     );
 
@@ -47,6 +51,8 @@ public class OpModeMethods {
                     FlywheelController::stop,
                     UptakeServoController::stop,
                     TurretUpAngleController::stop,
+                    TurretController::stop,
+                    LimelightController::stop,
                     TimedTelemetry::stop
             )
     );

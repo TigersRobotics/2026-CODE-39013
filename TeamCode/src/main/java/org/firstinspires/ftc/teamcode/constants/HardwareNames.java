@@ -14,4 +14,6 @@ public class HardwareNames {
     public static final String TURRET_UP_ANGLE_SERVO_NAME = "hood";
     public static final String TURRET_LEFT_SERVO_NAME = "turretLeft";
     public static final String TURRET_RIGHT_SERVO_NAME = "turretRight";
+    public static final String LIMELIGHT_NAME = "limelight";
+    public static final String LIMELIGHT_TILT_SERVO_NAME = "limelightTilt";
 }
