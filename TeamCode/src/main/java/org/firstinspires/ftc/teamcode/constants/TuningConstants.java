@@ -21,4 +21,23 @@ public class TuningConstants {
     public static final double LIMELIGHT_TILT_STEP = 0.05;
     public static final double TURRET_AIM_GAIN = 0.2;
     public static final double TURRET_AIM_DEADBAND = 1.0;
+
+    public static final double FORESIGHT_FORWARD_TRANSLATIONAL_PRIMARY_KP = 0.15;
+    public static final double FORESIGHT_FORWARD_TRANSLATIONAL_SECONDARY_KP = 0.05;
+    public static final double FORESIGHT_STRAFE_TRANSLATIONAL_PRIMARY_KP = 0.15;
+    public static final double FORESIGHT_STRAFE_TRANSLATIONAL_SECONDARY_KP = 0.05;
+    public static final double FORESIGHT_TRANSLATIONAL_SWITCH_DISTANCE = 2.5;
+    public static final double FORESIGHT_COAST_KV = 0.018;
+    public static final double FORESIGHT_BRAKE_KV = 0.018;
+    public static final double FORESIGHT_HEADING_KP = 1.0;
+    public static final double FORESIGHT_HEADING_BRAKE_LINEAR = 0.1;
+    public static final double FORESIGHT_HEADING_BRAKE_QUADRATIC = 0.02;
+    public static final double FORESIGHT_FORWARD_BRAKE_LINEAR = 0.05;
+    public static final double FORESIGHT_FORWARD_BRAKE_QUADRATIC = 0.003;
+    public static final double FORESIGHT_STRAFE_BRAKE_LINEAR = 0.06;
+    public static final double FORESIGHT_STRAFE_BRAKE_QUADRATIC = 0.004;
+    public static final double FORESIGHT_MAX_FORWARD_VELOCITY = 55;
+    public static final double FORESIGHT_MAX_STRAFE_VELOCITY = 45;
+    public static final double FORESIGHT_FORWARD_DECELERATION = 40;
+    public static final double FORESIGHT_STRAFE_DECELERATION = 60;
 }
