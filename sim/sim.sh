@@ -23,6 +23,17 @@ rm -rf out
     $TEAM/controller/Binding.java \
     $TEAM/controller/CustomController.java \
     $TEAM/robotControllers/MecanumDriveTrainController.java \
+    $TEAM/robotControllers/SingleIntakeController.java \
+    $TEAM/robotControllers/UptakeController.java \
+    $TEAM/robotControllers/FlywheelController.java \
+    $TEAM/robotControllers/UptakeServoController.java \
+    $TEAM/opmodes/UptakeServoTest.java \
+    $TEAM/robotControllers/TurretUpAngleController.java \
+    $TEAM/opmodes/TurretUpDownControllerV1Test.java \
+    $TEAM/utils/UtilMethods.java \
+    $TEAM/constants/RobotSpecs.java \
+    $TEAM/opmodes/IntakeTest.java \
+    $TEAM/opmodes/UptakeTest.java \
     $TEAM/robotControllers/TurretController.java || exit 1
 
 if [ "$1" = "test" ]; then

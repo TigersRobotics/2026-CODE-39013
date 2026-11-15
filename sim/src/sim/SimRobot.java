@@ -30,8 +30,12 @@ public class SimRobot {
     public final SimMotor backLeft = new SimMotor();
     public final SimMotor backRight = new SimMotor();
     public final SimMotor flywheel = new SimMotor();
+    public final SimMotor intake = new SimMotor();
+    public final SimMotor uptake = new SimMotor();
     public final SimServo turretLeft = new SimServo();
     public final SimServo turretRight = new SimServo();
+    public final SimServo kicker = new SimServo();
+    public final SimServo hood = new SimServo();
 
     public double x, y, heading;
     public double forwardVel, strafeVel, turnVel;
@@ -56,8 +60,12 @@ public class SimRobot {
         map.put(HardwareNames.BACK_LEFT_MOTOR_NAME, backLeft);
         map.put(HardwareNames.BACK_RIGHT_MOTOR_NAME, backRight);
         map.put(HardwareNames.FLYWHEEL_NAME, flywheel);
+        map.put(HardwareNames.INTAKE_MOTOR_NAME, intake);
+        map.put(HardwareNames.UPTAKE_MOTOR_NAME, uptake);
         map.put(HardwareNames.TURRET_LEFT_SERVO_NAME, turretLeft);
         map.put(HardwareNames.TURRET_RIGHT_SERVO_NAME, turretRight);
+        map.put(HardwareNames.UPTAKE_SERVO_NAME, kicker);
+        map.put(HardwareNames.TURRET_UP_ANGLE_SERVO_NAME, hood);
         return map;
     }
 
@@ -71,6 +79,10 @@ public class SimRobot {
     public double wheelBR() { return backRight.shaftPower(); }
 
     public void step(double dt) {
+        flywheel.step(dt);
+        intake.step(dt);
+        uptake.step(dt);
+
         double fl = wheelFL(), fr = wheelFR(), bl = wheelBL(), br = wheelBR();
 
         // inverse of the mecanum mixing in MecanumDriveTrainController

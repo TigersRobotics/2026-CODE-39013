@@ -1,13 +1,11 @@
 package com.qualcomm.robotcore.hardware;
 
-// Sim stand-in for the FTC SDK class, only what our code uses
-public interface DcMotor {
-    enum Direction { FORWARD, REVERSE }
+public interface DcMotor extends DcMotorSimple {
     enum RunMode { RUN_WITHOUT_ENCODER, RUN_USING_ENCODER, RUN_TO_POSITION, STOP_AND_RESET_ENCODER }
+    enum ZeroPowerBehavior { UNKNOWN, BRAKE, FLOAT }
 
-    void setDirection(Direction direction);
-    Direction getDirection();
-    void setPower(double power);
-    double getPower();
     void setMode(RunMode mode);
+    RunMode getMode();
+    void setZeroPowerBehavior(ZeroPowerBehavior zeroPowerBehavior);
+    ZeroPowerBehavior getZeroPowerBehavior();
 }

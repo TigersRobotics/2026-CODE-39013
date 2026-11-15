@@ -6,6 +6,7 @@ public class HardwareNames {
     public static final String BACK_LEFT_MOTOR_NAME = "backLeft";
     public static final String BACK_RIGHT_MOTOR_NAME = "backRight";
 
+    public static final String UPTAKE_SERVO_NAME = "kicker";
     public static final String FLYWHEEL_NAME = "shooter";
     public static final String UPTAKE_MOTOR_NAME = "uptake";
     public static final String INTAKE_MOTOR_NAME = "intake";

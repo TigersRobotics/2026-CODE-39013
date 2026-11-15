@@ -2,7 +2,12 @@ package org.firstinspires.ftc.teamcode.constants;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.robotControllers.FlywheelController;
 import org.firstinspires.ftc.teamcode.robotControllers.MecanumDriveTrainController;
+import org.firstinspires.ftc.teamcode.robotControllers.SingleIntakeController;
+import org.firstinspires.ftc.teamcode.robotControllers.TurretUpAngleController;
+import org.firstinspires.ftc.teamcode.robotControllers.UptakeController;
+import org.firstinspires.ftc.teamcode.robotControllers.UptakeServoController;
 import org.firstinspires.ftc.teamcode.utils.TimedTelemetry;
 import org.firstinspires.ftc.teamcode.utils.Timer;
 
@@ -18,7 +23,12 @@ public class OpModeMethods {
     );
     public static ArrayList<Consumer<HardwareMap>> HARDWARE_MAP_INIT = new ArrayList<>(
             List.of(
-                    MecanumDriveTrainController::init
+                    MecanumDriveTrainController::init,
+                    SingleIntakeController::init,
+                    UptakeController::init,
+                    FlywheelController::init,
+                    UptakeServoController::init,
+                    TurretUpAngleController::init
             )
     );
 
@@ -32,6 +42,11 @@ public class OpModeMethods {
     public static ArrayList<Runnable> NO_PARAM_STOP = new ArrayList<>(
             List.of(
                     MecanumDriveTrainController::stop,
+                    SingleIntakeController::stop,
+                    UptakeController::stop,
+                    FlywheelController::stop,
+                    UptakeServoController::stop,
+                    TurretUpAngleController::stop,
                     TimedTelemetry::stop
             )
     );

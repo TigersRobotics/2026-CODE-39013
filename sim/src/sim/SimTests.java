@@ -1,6 +1,17 @@
 package sim;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.constants.RobotSpecs;
+import org.firstinspires.ftc.teamcode.constants.TuningConstants;
+import org.firstinspires.ftc.teamcode.opmodes.IntakeTest;
+import org.firstinspires.ftc.teamcode.opmodes.TurretUpDownControllerV1Test;
+import org.firstinspires.ftc.teamcode.opmodes.UptakeServoTest;
+import org.firstinspires.ftc.teamcode.opmodes.UptakeTest;
+import org.firstinspires.ftc.teamcode.robotControllers.FlywheelController;
 import org.firstinspires.ftc.teamcode.robotControllers.MecanumDriveTrainController;
+import org.firstinspires.ftc.teamcode.robotControllers.TurretUpAngleController;
+import org.firstinspires.ftc.teamcode.robotControllers.UptakeServoController;
 import org.firstinspires.ftc.teamcode.utils.TimedTelemetry;
 import org.firstinspires.ftc.teamcode.utils.Timer;
 
@@ -258,6 +269,83 @@ public class SimTests {
             for (int i = 0; i < 2; i++) { SimClock.advance(0.02); Timer.update(); }
             check(fired[1], "a trigger can add another trigger");
             check(Timer.getTriggerCount() == 0, "finished triggers are removed");
+        });
+
+        test("intake test runs the intake from the triggers", () -> {
+            SimRobot robot = new SimRobot(0, 0, 0);
+            SimSession s = new SimSession(robot, new IntakeTest());
+            check(s.telemetry.getHistory().contains("Intake Initialized"), "intake init line");
+            s.gamepad1.left_trigger = 1;
+            s.tick();
+            near(robot.intake.shaftPower(), 1, 1e-9, "left trigger pulls in");
+            s.gamepad1.left_trigger = 0;
+            s.gamepad1.right_trigger = 0.5f;
+            s.tick();
+            near(robot.intake.shaftPower(), -0.5, 1e-9, "right trigger pushes out");
+            s.stop();
+            near(robot.intake.getPower(), 0, 1e-9, "stop turns the intake off");
+        });
+
+        test("uptake test runs the uptake from the triggers", () -> {
+            SimRobot robot = new SimRobot(0, 0, 0);
+            SimSession s = new SimSession(robot, new UptakeTest());
+            check(s.telemetry.getHistory().contains("Uptake Initialized"), "uptake init line");
+            s.gamepad1.right_trigger = 1;
+            s.tick();
+            near(robot.uptake.getPower(), 1, 1e-9, "right trigger moves balls up");
+            near(robot.intake.getPower(), 0, 1e-9, "intake is not touched");
+            s.gamepad1.right_trigger = 0;
+            s.gamepad1.left_trigger = 1;
+            s.tick();
+            near(robot.uptake.getPower(), -1, 1e-9, "left trigger moves balls down");
+            s.stop();
+            near(robot.uptake.getPower(), 0, 1e-9, "stop turns the uptake off");
+        });
+
+        test("kicker pushes up, then comes back down after the kick time", () -> {
+            SimRobot robot = new SimRobot(0, 0, 0);
+            SimSession s = new SimSession(robot, new UptakeServoTest());
+            near(robot.kicker.getPosition(), RobotSpecs.UPTAKE_SERVO_DEFAULT_ANGLE, 1e-9, "starts down");
+            s.gamepad1.a = true;
+            s.tick();
+            s.gamepad1.a = false;
+            near(robot.kicker.getPosition(), RobotSpecs.UPTAKE_SERVO_UP_ANGLE, 1e-9, "goes up on the press");
+            int kickLoops = (int) Math.round(RobotSpecs.UPTAKE_SERVO_KICK_MS / 1000 / SimSession.LOOP_TIME);
+            for (int i = 0; i < kickLoops - 1; i++) s.tick();
+            near(robot.kicker.getPosition(), RobotSpecs.UPTAKE_SERVO_UP_ANGLE, 1e-9, "stays up for the whole kick, not one loop");
+            s.tick();
+            near(robot.kicker.getPosition(), RobotSpecs.UPTAKE_SERVO_DEFAULT_ANGLE, 1e-9, "comes back down after the kick time");
+        });
+
+        test("kicker ignores presses until it is back down", () -> {
+            SimRobot robot = new SimRobot(0, 0, 0);
+            SimSession s = new SimSession(robot, new UptakeServoTest());
+            s.tap(() -> s.gamepad1.a = true, () -> s.gamepad1.a = false);
+            s.run(RobotSpecs.UPTAKE_SERVO_KICK_MS / 1000 + 0.04);
+            check(UptakeServoController.isBusy(), "still busy while moving down");
+            s.tap(() -> s.gamepad1.a = true, () -> s.gamepad1.a = false);
+            near(robot.kicker.getPosition(), RobotSpecs.UPTAKE_SERVO_DEFAULT_ANGLE, 1e-9, "second press ignored");
+            s.run(RobotSpecs.UPTAKE_SERVO_RETRACT_MS / 1000);
+            check(!UptakeServoController.isBusy(), "free again");
+            s.gamepad1.a = true;
+            s.tick();
+            near(robot.kicker.getPosition(), RobotSpecs.UPTAKE_SERVO_UP_ANGLE, 1e-9, "kicks again once free");
+        });
+
+        test("dpad steps the hood angle and stops at the limits", () -> {
+            SimRobot robot = new SimRobot(0, 0, 0);
+            SimSession s = new SimSession(robot, new TurretUpDownControllerV1Test());
+            near(robot.hood.getPosition(), RobotSpecs.HOOD_DEFAULT_ANGLE / RobotSpecs.HOOD_SERVO_MAX_ANGLE, 1e-9, "starts at the default angle");
+            s.gamepad1.dpad_up = true;
+            s.run(1);
+            s.gamepad1.dpad_up = false;
+            s.tick();
+            near(TurretUpAngleController.getTargetAngle(), RobotSpecs.HOOD_DEFAULT_ANGLE + TuningConstants.HOOD_STEP_ANGLE, 1e-9, "holding up counts as one step");
+            near(robot.hood.getPosition(), TurretUpAngleController.getTargetAngle() / RobotSpecs.HOOD_SERVO_MAX_ANGLE, 1e-9, "servo follows");
+            for (int i = 0; i < 40; i++) s.tap(() -> s.gamepad1.dpad_up = true, () -> s.gamepad1.dpad_up = false);
+            near(TurretUpAngleController.getTargetAngle(), RobotSpecs.HOOD_MAX_ANGLE, 1e-9, "stops at the top");
+            for (int i = 0; i < 40; i++) s.tap(() -> s.gamepad1.dpad_down = true, () -> s.gamepad1.dpad_down = false);
+            near(TurretUpAngleController.getTargetAngle(), RobotSpecs.HOOD_MIN_ANGLE, 1e-9, "stops at the bottom");
         });
 
         System.out.println();
