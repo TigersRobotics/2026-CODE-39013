@@ -1,8 +1,13 @@
 package sim;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+
+import org.firstinspires.ftc.teamcode.constants.RobotSpecs;
+import org.firstinspires.ftc.teamcode.robotControllers.FlywheelController;
+import org.firstinspires.ftc.teamcode.robotControllers.UptakeServoController;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,13 +19,8 @@ import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Runs the real robot code at 50 Hz and serves the sim page.
- * The page reads the PS5 controller (or keyboard) and sends it here, we send back the robot state.
- */
 public class SimServer {
     public static final int PORT = 8039;
-    // stop the robot if the page stops sending input, like the robot does when the Driver Station drops
     private static final long INPUT_TIMEOUT_MS = 500;
 
     private final Path web;
@@ -35,6 +35,7 @@ public class SimServer {
     }
 
     private synchronized void reset() {
+        if (session != null) session.stop();
         session = new SimSession(SimRobot.atStart(red));
     }
 
@@ -45,10 +46,6 @@ public class SimServer {
         session.tick();
     }
 
-    /**
-     * Input per gamepad is lx, ly, rx, ry, l2, r2, then buttons in the browser's standard order:
-     * cross, circle, square, triangle, L1, R1, L2, R2, create, options, L3, R3, up, down, left, right, PS, touchpad
-     */
     private static void apply(Gamepad g, float[] v) {
         if (v == null) v = new float[24];
         g.left_stick_x = v[0];
@@ -99,6 +96,7 @@ public class SimServer {
 
     private String stateJson() {
         SimRobot r = session.robot;
+        LLResult view = r.limelight.view();
         StringBuilder sb = new StringBuilder();
         sb.append('{');
         sb.append(String.format(Locale.US, "\"t\":%.2f,\"x\":%.3f,\"y\":%.3f,\"heading\":%.4f,", session.time, r.x, r.y, r.heading));
@@ -106,6 +104,14 @@ public class SimServer {
         sb.append(String.format(Locale.US, "\"wheels\":[%.3f,%.3f,%.3f,%.3f],", r.wheelFL(), r.wheelFR(), r.wheelBL(), r.wheelBR()));
         sb.append(String.format(Locale.US, "\"turret\":%.4f,\"turretServo\":%.3f,\"turretAsked\":%.3f,",
                 r.turretAngle(), r.turretLeft.getPosition(), r.turretLeft.getLastRequested()));
+        sb.append(String.format(Locale.US, "\"flywheel\":%.0f,\"flywheelTarget\":%.0f,\"flywheelReady\":%b,",
+                r.flywheel.getVelocity(), r.flywheel.getTargetVelocity(), FlywheelController.isAtSpeed()));
+        sb.append(String.format(Locale.US, "\"intake\":%.2f,\"uptake\":%.2f,", r.intake.getPower(), r.uptake.getPower()));
+        sb.append(String.format(Locale.US, "\"kickerUp\":%b,\"kickerBusy\":%b,",
+                r.kicker.getPosition() > RobotSpecs.UPTAKE_SERVO_DEFAULT_ANGLE + 1e-6, UptakeServoController.isBusy()));
+        sb.append(String.format(Locale.US, "\"hood\":%.1f,", r.hood.getPosition() * RobotSpecs.HOOD_SERVO_MAX_ANGLE));
+        sb.append(String.format(Locale.US, "\"llValid\":%b,\"llTx\":%.2f,\"target\":[%.2f,%.2f],",
+                view.isValid(), view.getTx(), r.targetX, r.targetY));
         sb.append("\"red\":").append(red).append(',');
         sb.append(String.format(Locale.US, "\"robot\":[%.2f,%.2f],", SimRobot.ROBOT_WIDTH, SimRobot.ROBOT_LENGTH));
         sb.append("\"telemetry\":[");
@@ -129,7 +135,6 @@ public class SimServer {
     }
 
     public void start() throws IOException {
-        // only reachable from this computer
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", PORT), 0);
         server.createContext("/", ex -> {
             String path = ex.getRequestURI().getPath();

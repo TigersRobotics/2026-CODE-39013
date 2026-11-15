@@ -64,6 +64,7 @@
   .stat .k { color: var(--dim); font-size: 11px; }
   .stat .v { font: 600 16px ui-monospace, SFMono-Regular, Menlo, monospace; }
   .stat.warn .v { color: var(--warn); }
+  .stat.ready .v { color: var(--ok); }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   td { padding: 4px 0; vertical-align: top; }
   td:first-child { width: 46%; }
@@ -97,7 +98,7 @@
 <aside>
   <div>
     <h1>Team 39013 Robot Sim</h1>
-    <div class="sub">BIOBUZZ 2026-27 &middot; running real TeamCode: ControllerTest</div>
+    <div class="sub">BIOBUZZ 2026-27 &middot; running real TeamCode: TeleOpMain</div>
   </div>
 
   <div>
@@ -119,10 +120,16 @@
     <div class="stat"><div class="k">Heading</div><div class="v" id="sHeading">0</div></div>
     <div class="stat"><div class="k">Position (in)</div><div class="v" id="sPos">0, 0</div></div>
     <div class="stat" id="turretStat"><div class="k">Turret servo</div><div class="v" id="sTurret">0</div></div>
+    <div class="stat" id="flywheelStat"><div class="k">Flywheel (ticks/s)</div><div class="v" id="sFlywheel">0</div></div>
+    <div class="stat" id="kickerStat"><div class="k">Kicker</div><div class="v" id="sKicker">down</div></div>
+    <div class="stat"><div class="k">Intake</div><div class="v" id="sIntake">0</div></div>
+    <div class="stat"><div class="k">Uptake</div><div class="v" id="sUptake">0</div></div>
+    <div class="stat"><div class="k">Hood</div><div class="v" id="sHood">0</div></div>
+    <div class="stat" id="llStat"><div class="k">Limelight</div><div class="v" id="sLimelight">no target</div></div>
   </div>
 
   <div>
-    <h2>Controls (from ControllerTest)</h2>
+    <h2>Controls (from TeleOpMain)</h2>
     <div class="card">
       <table>
         <tr><td colspan="2" class="note" style="padding-bottom:6px">Gamepad 1, driver</td></tr>
@@ -132,6 +139,12 @@
         <tr><td><span class="btn-glyph">L1</span></td><td>slower <kbd>Q</kbd></td></tr>
         <tr><td colspan="2" class="note" style="padding:10px 0 6px">Gamepad 2, operator</td></tr>
         <tr><td><span class="btn-glyph">L stick</span> &larr;&rarr;</td><td>turret <kbd>J L</kbd></td></tr>
+        <tr><td><span class="btn-glyph">R2</span></td><td>spin up flywheel <kbd>K</kbd></td></tr>
+        <tr><td><span class="btn-glyph">Cross</span></td><td>fire when flywheel is ready <kbd>Space</kbd></td></tr>
+        <tr><td><span class="btn-glyph">L2</span></td><td>intake and uptake in <kbd>I</kbd></td></tr>
+        <tr><td><span class="btn-glyph">L1</span></td><td>reverse intake <kbd>U</kbd></td></tr>
+        <tr><td><span class="btn-glyph">D-pad</span> &uarr;&darr;</td><td>hood angle <kbd>&uarr; &darr;</kbd></td></tr>
+        <tr><td><span class="btn-glyph">R1</span></td><td>Limelight auto aim on/off <kbd>O</kbd></td></tr>
       </table>
     </div>
   </div>
@@ -150,7 +163,6 @@
 <div id="offline">Sim server is not running.<br>Start it with ./sim/sim.sh</div>
 
 <script>
-// Field layout, must match Field.java (inches from center, +x toward blue, +y away from audience)
 const F = {
   half: 72,
   redLZ: [-72, 24, -61, 47], blueLZ: [61, -47, 72, -24],
@@ -206,7 +218,6 @@ function ball(x, y, d, color) {
 function drawField(state) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // ALLIANCE AREAS outside the field
   rect([-72 - F.areaD, -F.areaW / 2, -72, F.areaW / 2], 'rgba(224,72,72,0.16)', 'rgba(224,72,72,0.7)', 2);
   rect([72, -F.areaW / 2, 72 + F.areaD, F.areaW / 2], 'rgba(63,128,232,0.16)', 'rgba(63,128,232,0.7)', 2);
   ctx.fillStyle = 'rgba(255,255,255,0.55)';
@@ -214,13 +225,11 @@ function drawField(state) {
   ctx.textAlign = 'center';
   ctx.fillText('RED ALLIANCE', X(-72 - F.areaD / 2), Y(F.areaW / 2 - 6));
   ctx.fillText('BLUE ALLIANCE', X(72 + F.areaD / 2), Y(F.areaW / 2 - 6));
-  // NECTAR waiting in the ALLIANCE AREAS
   for (let i = 0; i < 5; i++) {
     ball(-76 - (i % 2) * 4, -8 + i * 4, NECTAR_D, '#d23c3c');
     ball(76 + (i % 2) * 4, 8 - i * 4, NECTAR_D, '#3570d8');
   }
 
-  // tiles
   for (let i = 0; i < 6; i++) {
     for (let j = 0; j < 6; j++) {
       const shade = (i + j) % 2 ? '#3b3f46' : '#383c43';
@@ -233,12 +242,10 @@ function drawField(state) {
     ctx.beginPath(); ctx.moveTo(X(-72 + i * 24), Y(72)); ctx.lineTo(X(-72 + i * 24), Y(-72)); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(X(-72), Y(-72 + i * 24)); ctx.lineTo(X(72), Y(-72 + i * 24)); ctx.stroke();
   }
-  // tile column letters A-F, red side is A-C
   ctx.fillStyle = 'rgba(255,255,255,0.18)';
   ctx.font = `${Math.max(9, 2.6 * scale)}px -apple-system, sans-serif`;
   'ABCDEF'.split('').forEach((c, i) => ctx.fillText(c, X(-60 + i * 24), Y(-68)));
 
-  // LOADING ZONES and GARDENS
   rect(F.redLZ, 'rgba(224,72,72,0.22)', '#e04848', 2.5);
   rect(F.blueLZ, 'rgba(63,128,232,0.22)', '#3f80e8', 2.5);
   rect(F.redGarden, '#e04848');
@@ -248,7 +255,6 @@ function drawField(state) {
     ball(70 - i * 3, 69.6, POLLEN_D, '#f5d533');
   }
 
-  // FLOWERS
   for (const [fx, fy] of F.flowers) {
     ctx.beginPath();
     ctx.arc(X(fx), Y(fy), F.flowerR * scale, 0, Math.PI * 2);
@@ -260,7 +266,6 @@ function drawField(state) {
     ball(fx, fy, POLLEN_D, '#f5d533');
   }
 
-  // perimeter wall
   ctx.strokeStyle = '#c9ccd1';
   ctx.lineWidth = Math.max(3, 1.2 * scale);
   ctx.strokeRect(X(-72), Y(72), 144 * scale, 144 * scale);
@@ -270,7 +275,6 @@ function drawField(state) {
   ctx.fillText('AUDIENCE', X(0), Y(-72) + 4.5 * scale);
 }
 
-// HIVE hangs overhead, so it is drawn over the robot and slightly see through
 function drawHive() {
   ctx.save();
   ctx.globalAlpha = 0.85;
@@ -286,7 +290,6 @@ function drawHive() {
     ctx.fillStyle = '#c3c8cf';
     ctx.fill();
   }
-  // at the start the red CELL toward the audience and the blue CELL away from it face up
   drawCell(F.redHiveX, -F.cellSpacing / 2, '#e04848', true, '#d23c3c');
   drawCell(F.redHiveX, F.cellSpacing / 2, '#e04848', false);
   drawCell(F.blueHiveX, F.cellSpacing / 2, '#3f80e8', true, '#3570d8');
@@ -306,8 +309,17 @@ function drawCell(cx, cy, color, up, nectar) {
 
 const trail = [];
 
+function drawAim(s) {
+  if (!s.llValid) return;
+  ctx.save();
+  ctx.setLineDash([1.2 * scale, 1.2 * scale]);
+  ctx.strokeStyle = 'rgba(60,207,122,0.8)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(X(s.x), Y(s.y)); ctx.lineTo(X(s.target[0]), Y(s.target[1])); ctx.stroke();
+  ctx.restore();
+}
+
 function drawRobot(s) {
-  // trail
   ctx.strokeStyle = 'rgba(242,194,48,0.35)';
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -320,7 +332,6 @@ function drawRobot(s) {
   ctx.rotate(s.heading);
   const w = rw * scale, l = rl * scale;
 
-  // shadow and chassis
   ctx.shadowColor = 'rgba(0,0,0,0.5)';
   ctx.shadowBlur = 3 * scale;
   ctx.fillStyle = '#5a606a';
@@ -331,7 +342,6 @@ function drawRobot(s) {
   ctx.strokeStyle = s.red ? '#e04848' : '#3f80e8';
   ctx.stroke();
 
-  // mecanum wheels, rollers angled like an X, green pushes forward and red pushes back
   const ww = 2.4 * scale, wl = 4.1 * scale;
   const spots = [[-1, -1, 0, 1], [1, -1, 1, -1], [-1, 1, 2, -1], [1, 1, 3, 1]];
   for (const [sx, sy, idx, slant] of spots) {
@@ -352,7 +362,6 @@ function drawRobot(s) {
     ctx.restore();
   }
 
-  // front marker and team number
   ctx.fillStyle = '#f2c230';
   ctx.beginPath();
   ctx.moveTo(0, -l / 2 + 0.8 * scale);
@@ -365,11 +374,15 @@ function drawRobot(s) {
   ctx.textAlign = 'center';
   ctx.fillText('39013', 0, l / 2 - 1.4 * scale);
 
-  // turret
   ctx.rotate(s.turret);
   ctx.fillStyle = '#2a2d33';
   ctx.beginPath(); ctx.arc(0, 0, 4.2 * scale, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = '#f28c28';
+  if (s.flywheelTarget) {
+    ctx.strokeStyle = s.flywheelReady ? '#3ccf7a' : '#f2c230';
+    ctx.lineWidth = 0.6 * scale;
+    ctx.beginPath(); ctx.arc(0, 0, 4.2 * scale, 0, Math.PI * 2 * Math.min(1, s.flywheel / s.flywheelTarget)); ctx.stroke();
+  }
+  ctx.strokeStyle = s.kickerUp ? '#ffffff' : '#f28c28';
   ctx.lineWidth = 1.6 * scale;
   ctx.lineCap = 'round';
   ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -7.5 * scale); ctx.stroke();
@@ -386,12 +399,11 @@ function roundRect(x, y, w, h, r) {
   ctx.closePath();
 }
 
-// ---- input: PS5 controllers through the browser, keyboard as backup ----
 const keys = new Set();
 addEventListener('keydown', e => {
   keys.add(e.code);
   if (e.code === 'KeyR') reset();
-  if (e.code.startsWith('Arrow')) e.preventDefault();
+  if (e.code.startsWith('Arrow') || e.code === 'Space') e.preventDefault();
 });
 addEventListener('keyup', e => keys.delete(e.code));
 addEventListener('blur', () => keys.clear());
@@ -407,7 +419,6 @@ function padName(g) {
   return g.id.replace(/\(.*?\)/g, '').trim() || 'controller';
 }
 
-// lx, ly, rx, ry, L2, R2, then the 18 standard buttons
 function fromPad(g) {
   const v = new Array(24).fill(0);
   v[0] = dz(g.axes[0] || 0);
@@ -423,7 +434,7 @@ function fromPad(g) {
 function keyboardPad1() {
   const v = new Array(24).fill(0);
   v[0] = axis('KeyA', 'KeyD');
-  v[1] = axis('KeyW', 'KeyS'); // stick y is negative when pushed up
+  v[1] = axis('KeyW', 'KeyS');
   v[2] = axis('ArrowLeft', 'ArrowRight');
   v[6 + 4] = keys.has('KeyQ') ? 1 : 0;
   v[6 + 5] = keys.has('KeyE') ? 1 : 0;
@@ -433,6 +444,13 @@ function keyboardPad1() {
 function keyboardPad2() {
   const v = new Array(24).fill(0);
   v[0] = axis('KeyJ', 'KeyL');
+  v[4] = keys.has('KeyI') ? 1 : 0;
+  v[5] = keys.has('KeyK') ? 1 : 0;
+  v[6] = keys.has('Space') ? 1 : 0;
+  v[6 + 4] = keys.has('KeyU') ? 1 : 0;
+  v[6 + 5] = keys.has('KeyO') ? 1 : 0;
+  v[6 + 12] = keys.has('ArrowUp') ? 1 : 0;
+  v[6 + 13] = keys.has('ArrowDown') ? 1 : 0;
   return v;
 }
 
@@ -449,7 +467,6 @@ function setPad(n, g) {
   document.getElementById('pad' + n).textContent = g ? padName(g) : 'keyboard';
 }
 
-// ---- talk to the sim server ----
 let state = null, busy = false, offline = false;
 
 async function send() {
@@ -486,6 +503,15 @@ function updatePanel(s) {
   document.getElementById('sTurret').textContent = s.turretServo.toFixed(2) + (clamped ? ' !' : '');
   document.getElementById('turretStat').classList.toggle('warn', clamped);
   document.getElementById('turretStat').title = clamped ? 'Code asked for ' + s.turretAsked.toFixed(2) + ', servo clamps to 0-1' : '';
+  document.getElementById('sFlywheel').textContent = s.flywheel.toFixed(0) + (s.flywheelTarget ? ' / ' + s.flywheelTarget.toFixed(0) : '');
+  document.getElementById('flywheelStat').classList.toggle('ready', s.flywheelReady);
+  document.getElementById('sKicker').textContent = s.kickerUp ? 'UP' : (s.kickerBusy ? 'returning' : 'down');
+  document.getElementById('kickerStat').classList.toggle('ready', s.kickerUp);
+  document.getElementById('sIntake').textContent = s.intake.toFixed(2);
+  document.getElementById('sUptake').textContent = s.uptake.toFixed(2);
+  document.getElementById('sHood').textContent = s.hood.toFixed(0) + '°';
+  document.getElementById('sLimelight').textContent = s.llValid ? 'tx ' + s.llTx.toFixed(1) + '°' : 'no target';
+  document.getElementById('llStat').classList.toggle('ready', s.llValid);
   document.getElementById('startRed').classList.toggle('active', s.red);
   document.getElementById('startBlue').classList.toggle('active', !s.red);
 }
@@ -500,6 +526,7 @@ function frame(now) {
       lastTrail = now;
     }
     drawField(state);
+    drawAim(state);
     drawRobot(state);
     drawHive();
     updatePanel(state);
