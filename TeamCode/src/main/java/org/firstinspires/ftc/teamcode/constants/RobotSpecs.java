@@ -7,8 +7,8 @@ public class RobotSpecs {
 
     public static final double MAX_TURRET_ANGLE_UP = 75;
     public static final double MAX_TURRET_ANGLE_DOWN = 15;
-    public static final double OFFSETS_OF_ODOMETRY_PODS_MM_X = -100;
-    public static final double OFFSETS_OF_ODOMETRY_PODS_MM_Y = -100;
+    public static final double OFFSETS_OF_ODOMETRY_PODS_IN_X = 0.0;
+    public static final double OFFSETS_OF_ODOMETRY_PODS_IN_Y = 0.0;
     public static final double BALL_SPEED = 10;
 
     public static final double FLYWHEEL_MAX_TICKS_PER_SECOND = 2800;

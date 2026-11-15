@@ -3,7 +3,7 @@ package sim;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.opmodes.ControllerTest;
+import org.firstinspires.ftc.teamcode.opmodes.TeleOpMain;
 
 public class SimSession {
     public static final double LOOP_TIME = 0.02;
@@ -16,7 +16,7 @@ public class SimSession {
     public double time;
 
     public SimSession(SimRobot robot) {
-        this(robot, new ControllerTest());
+        this(robot, new TeleOpMain());
     }
 
     public SimSession(SimRobot robot, OpMode opMode) {

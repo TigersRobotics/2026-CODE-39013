@@ -13,6 +13,7 @@ fi
 TEAM=../TeamCode/src/main/java/org/firstinspires/ftc/teamcode
 rm -rf out
 "$BIN/javac" -d out $(find stubs src -name '*.java') \
+    $TEAM/opmodes/TeleOpMain.java \
     $TEAM/opmodes/ControllerTest.java \
     $TEAM/constants/HardwareNames.java \
     $TEAM/constants/TuningConstants.java \

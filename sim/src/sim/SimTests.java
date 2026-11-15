@@ -5,8 +5,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.constants.RobotSpecs;
 import org.firstinspires.ftc.teamcode.constants.TuningConstants;
+import org.firstinspires.ftc.teamcode.opmodes.ControllerTest;
 import org.firstinspires.ftc.teamcode.opmodes.IntakeTest;
 import org.firstinspires.ftc.teamcode.opmodes.LimelightTest;
+import org.firstinspires.ftc.teamcode.opmodes.TeleOpMain;
 import org.firstinspires.ftc.teamcode.opmodes.TurretUpDownControllerV1Test;
 import org.firstinspires.ftc.teamcode.opmodes.UptakeServoTest;
 import org.firstinspires.ftc.teamcode.opmodes.UptakeTest;
@@ -22,16 +24,31 @@ import org.firstinspires.ftc.teamcode.utils.Timer;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Checks the real drive code by driving the sim robot */
 public class SimTests {
     private static final List<String> failures = new ArrayList<>();
     private static int passed;
 
     public static void main(String[] args) {
-        test("init sets up drivetrain and turret", () -> {
+        test("TeleOp init sets up every mechanism", () -> {
             SimSession s = session();
-            check(s.telemetry.getHistory().contains("MECANUM DRIVE TRAIN INITIALIZED"), "drivetrain init line");
+            List<String> history = s.telemetry.getHistory();
+            for (String line : new String[]{"MECANUM DRIVE TRAIN INITIALIZED", "TURRET CONTROLLER INITIALIZED", "Intake Initialized",
+                    "Uptake Initialized", "Flywheel Controller Initialized", "Kicker Controller Initialized",
+                    "Hood Controller Initialized", "Limelight Initialized"}) {
+                check(history.contains(line), "init line: " + line);
+            }
+        });
+
+        test("ControllerTest still drives and aims the turret", () -> {
+            SimRobot robot = new SimRobot(0, 0, 0);
+            robot.collisions = false;
+            SimSession s = new SimSession(robot, new ControllerTest());
             check(s.telemetry.getHistory().contains("TURRET CONTROLLER INITIALIZED"), "turret init line");
+            s.gamepad1.left_stick_y = -1;
+            s.gamepad2.left_stick_x = 0.5f;
+            s.run(1);
+            check(robot.y > 0.8 * SimRobot.MAX_SPEED, "drove forward");
+            near(robot.turretLeft.getPosition(), 0.75, 1e-6, "turret half right");
         });
 
         test("left stick up drives forward", () -> {
@@ -143,7 +160,6 @@ public class SimTests {
             s.gamepad1.left_stick_x = 0.8f;
             s.tick();
             SimRobot r = s.robot;
-            // 0.6 forward + 0.8 strafe gives 1.4 and -0.2 before scaling, ratio has to stay -7
             near(r.wheelFL() / r.wheelFR(), -7, 1e-5, "wheel ratio unchanged");
         });
 
@@ -208,7 +224,6 @@ public class SimTests {
         });
 
         test("HIVE legs block the robot", () -> {
-            // drive right along the HIVE edge, straight at a leg
             SimRobot robot = new SimRobot(-50, Field.HIVE_DEPTH / 2, 0);
             SimSession s = new SimSession(robot);
             s.gamepad1.left_stick_x = 1;
@@ -226,7 +241,6 @@ public class SimTests {
         });
 
         test("FLOWERS block the robot", () -> {
-            // drive along the audience wall into the FLOWER there
             SimRobot robot = new SimRobot(0, -Field.HALF + 9, 0);
             SimSession s = new SimSession(robot);
             s.gamepad1.left_stick_x = 1;
@@ -424,6 +438,112 @@ public class SimTests {
             near(TurretController.getCurrentYaw(), aimed, 1e-9, "turret holds where it was");
             s.tap(() -> s.gamepad1.right_bumper = true, () -> s.gamepad1.right_bumper = false);
             near(TurretController.getCurrentYaw(), 0, 1e-9, "turning auto aim off goes back to the stick");
+        });
+
+        test("right trigger spins the flywheel up and holds the target", () -> {
+            SimSession s = session();
+            s.gamepad2.right_trigger = 1;
+            s.run(2);
+            near(s.robot.flywheel.getVelocity(), TuningConstants.FLYWHEEL_TARGET_VELOCITY, TuningConstants.FLYWHEEL_VELOCITY_TOLERANCE, "up to speed");
+            s.run(3);
+            near(s.robot.flywheel.getTargetVelocity(), TuningConstants.FLYWHEEL_TARGET_VELOCITY, 1e-9, "target held");
+            check(FlywheelController.isAtSpeed(), "at speed");
+            check(s.telemetry.getShown().stream().anyMatch(l -> l.contains("READY")), "telemetry says ready");
+            s.gamepad2.right_trigger = 0;
+            s.tick();
+            near(s.robot.flywheel.getPower(), 0, 1e-9, "letting go coasts the flywheel");
+        });
+
+        test("cross does not fire before the flywheel is at speed", () -> {
+            SimSession s = session();
+            s.gamepad2.right_trigger = 1;
+            s.tick();
+            s.tap(() -> s.gamepad2.a = true, () -> s.gamepad2.a = false);
+            near(s.robot.kicker.getPosition(), RobotSpecs.UPTAKE_SERVO_DEFAULT_ANGLE, 1e-9, "kicker stays down");
+            check(s.telemetry.getHistory().contains("Flywheel not at speed, not firing"), "driver is told why");
+        });
+
+        test("cross fires the kicker once the flywheel is at speed", () -> {
+            SimSession s = session();
+            s.gamepad2.right_trigger = 1;
+            s.run(2);
+            s.gamepad2.a = true;
+            s.tick();
+            s.gamepad2.a = false;
+            near(s.robot.kicker.getPosition(), RobotSpecs.UPTAKE_SERVO_UP_ANGLE, 1e-9, "kicker up");
+            s.run(RobotSpecs.UPTAKE_SERVO_KICK_MS / 1000 + 0.02);
+            near(s.robot.kicker.getPosition(), RobotSpecs.UPTAKE_SERVO_DEFAULT_ANGLE, 1e-9, "kicker back down");
+        });
+
+        test("left trigger runs the intake and uptake in", () -> {
+            SimSession s = session();
+            s.gamepad2.left_trigger = 1;
+            s.tick();
+            near(s.robot.intake.getPower(), TuningConstants.INTAKE_POWER, 1e-9, "intake in");
+            near(s.robot.uptake.getPower(), TuningConstants.UPTAKE_POWER, 1e-9, "uptake in");
+            s.gamepad2.left_trigger = 0;
+            s.tick();
+            near(s.robot.intake.getPower(), 0, 1e-9, "intake off when released");
+            near(s.robot.uptake.getPower(), 0, 1e-9, "uptake off when released");
+        });
+
+        test("left bumper reverses only the intake", () -> {
+            SimSession s = session();
+            s.gamepad2.left_trigger = 1;
+            s.gamepad2.left_bumper = true;
+            s.tick();
+            near(s.robot.intake.getPower(), TuningConstants.INTAKE_REVERSE_POWER, 1e-9, "intake out, even with the trigger held");
+            near(s.robot.uptake.getPower(), 0, 1e-9, "uptake stays off");
+        });
+
+        test("gamepad 2 dpad steps the hood", () -> {
+            SimSession s = session();
+            s.tap(() -> s.gamepad2.dpad_up = true, () -> s.gamepad2.dpad_up = false);
+            s.tap(() -> s.gamepad2.dpad_up = true, () -> s.gamepad2.dpad_up = false);
+            s.tap(() -> s.gamepad2.dpad_down = true, () -> s.gamepad2.dpad_down = false);
+            near(TurretUpAngleController.getTargetAngle(), RobotSpecs.HOOD_DEFAULT_ANGLE + TuningConstants.HOOD_STEP_ANGLE, 1e-9, "up two, down one");
+            near(s.robot.hood.getPosition(), TurretUpAngleController.getTargetAngle() / RobotSpecs.HOOD_SERVO_MAX_ANGLE, 1e-9, "servo follows");
+        });
+
+        test("gamepad 2 right bumper toggles auto aim", () -> {
+            SimRobot robot = SimRobot.atStart(true);
+            robot.heading -= Math.toRadians(15);
+            SimSession s = new SimSession(robot, new TeleOpMain());
+            s.run(0.5);
+            near(TurretController.getCurrentYaw(), 0, 1e-9, "manual turret by default");
+            s.tap(() -> s.gamepad2.right_bumper = true, () -> s.gamepad2.right_bumper = false);
+            s.run(1.5);
+            check(s.telemetry.getShown().contains("Auto Aim ON"), "telemetry shows auto aim on");
+            near(TurretController.getCurrentYaw(), 15, TuningConstants.TURRET_AIM_DEADBAND + 0.5, "turret aimed at the target");
+            s.tap(() -> s.gamepad2.right_bumper = true, () -> s.gamepad2.right_bumper = false);
+            near(TurretController.getCurrentYaw(), 0, 1e-9, "back to the stick");
+        });
+
+        test("driver controls do not run the mechanisms", () -> {
+            SimSession s = session();
+            s.gamepad1.left_trigger = 1;
+            s.gamepad1.right_trigger = 1;
+            s.gamepad1.a = true;
+            s.gamepad1.dpad_up = true;
+            s.run(0.5);
+            near(s.robot.intake.getPower(), 0, 1e-9, "intake off");
+            near(s.robot.flywheel.getPower(), 0, 1e-9, "flywheel off");
+            near(s.robot.kicker.getPosition(), RobotSpecs.UPTAKE_SERVO_DEFAULT_ANGLE, 1e-9, "kicker down");
+            near(TurretUpAngleController.getTargetAngle(), RobotSpecs.HOOD_DEFAULT_ANGLE, 1e-9, "hood unchanged");
+        });
+
+        test("stopping TeleOp turns every motor off", () -> {
+            SimSession s = session();
+            s.gamepad1.left_stick_y = -1;
+            s.gamepad2.right_trigger = 1;
+            s.gamepad2.left_trigger = 1;
+            s.run(1);
+            s.stop();
+            for (SimMotor m : new SimMotor[]{s.robot.frontLeft, s.robot.frontRight, s.robot.backLeft, s.robot.backRight,
+                    s.robot.flywheel, s.robot.intake, s.robot.uptake}) {
+                near(m.getPower(), 0, 1e-9, "motor off");
+            }
+            check(!s.robot.limelight.isRunning(), "limelight stopped");
         });
 
         System.out.println();
