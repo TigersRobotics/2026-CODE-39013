@@ -1,6 +1,7 @@
 package sim;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.constants.RobotSpecs;
@@ -452,6 +453,38 @@ public class SimTests {
             s.gamepad2.right_trigger = 0;
             s.tick();
             near(s.robot.flywheel.getPower(), 0, 1e-9, "letting go coasts the flywheel");
+        });
+
+        test("a zero flywheel target coasts instead of braking", () -> {
+            SimSession s = session();
+            s.gamepad2.right_trigger = 1;
+            s.run(2);
+            check(s.robot.flywheel.getMode() == DcMotor.RunMode.RUN_USING_ENCODER, "velocity control while spinning");
+            s.gamepad2.right_trigger = 0;
+            s.tick();
+            check(s.robot.flywheel.getMode() == DcMotor.RunMode.RUN_WITHOUT_ENCODER, "velocity loop off at target 0");
+            check(FlywheelController.isCoasting(), "controller reports coasting");
+            s.run(0.5);
+            check(s.robot.flywheel.getVelocity() > 0.7 * TuningConstants.FLYWHEEL_TARGET_VELOCITY,
+                    "still spinning after 0.5 s, velocity = " + s.robot.flywheel.getVelocity());
+            s.robot.flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0, 0, 0, 0));
+            s.gamepad2.right_trigger = 1;
+            s.tick();
+            check(s.robot.flywheel.getMode() == DcMotor.RunMode.RUN_USING_ENCODER, "back to velocity control");
+            check(s.robot.flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER).f > 0, "PIDF applied again on spin up");
+            s.run(2);
+            check(FlywheelController.isAtSpeed(), "back at speed");
+        });
+
+        test("drivetrain init sets brake mode even after a FLOAT OpMode", () -> {
+            SimRobot robot = new SimRobot(0, 0, 0);
+            for (SimMotor m : new SimMotor[]{robot.frontLeft, robot.frontRight, robot.backLeft, robot.backRight}) {
+                m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            }
+            new SimSession(robot, new TeleOpMain());
+            for (SimMotor m : new SimMotor[]{robot.frontLeft, robot.frontRight, robot.backLeft, robot.backRight}) {
+                check(m.getZeroPowerBehavior() == DcMotor.ZeroPowerBehavior.BRAKE, "drive motor brakes");
+            }
         });
 
         test("cross does not fire before the flywheel is at speed", () -> {

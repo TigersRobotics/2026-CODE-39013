@@ -1,15 +1,12 @@
 package org.firstinspires.ftc.teamcode.auto;
 
+import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 
-/**
- * Paths exported from the Pedro Pathing Visualizer.
- * The export names the class Paths, which clashes with Pedro's Paths, so rename it when pasting a new export.
- */
 public class VisualizerPaths {
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
@@ -20,7 +17,7 @@ public class VisualizerPaths {
     private final Pose point3 = poseFactory.of(42.9407, 95.9237, 145.8152);
 
     public Path path1() {
-        return line(firstpath, path1).linear(firstpath, path1);
+        return curve(firstpath, path1).linear(firstpath, path1);
     }
 
     public Path path2() {

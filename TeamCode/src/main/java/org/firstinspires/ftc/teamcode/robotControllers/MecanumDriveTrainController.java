@@ -37,6 +37,11 @@ public class MecanumDriveTrainController{
             frontRight.setDirection(DcMotor.Direction.FORWARD);
             backRight.setDirection(DcMotor.Direction.FORWARD);
 
+            frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
             speedLevel = DRIVE_SPEED_LEVELS.length - 1;
 
             TimedTelemetry.addLine("MECANUM DRIVE TRAIN INITIALIZED");

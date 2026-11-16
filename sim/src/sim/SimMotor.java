@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 public class SimMotor implements DcMotorEx {
     public static final double MAX_TICKS_PER_SECOND = 2800;
     public static final double SPIN_UP_TIME = 0.3;
+    public static final double COAST_TIME = 3.0;
 
     private Direction direction = Direction.FORWARD;
     private RunMode mode = RunMode.RUN_WITHOUT_ENCODER;
@@ -50,10 +51,13 @@ public class SimMotor implements DcMotorEx {
 
     public void step(double dt) {
         double target = power * MAX_TICKS_PER_SECOND;
-        if (velocityControl && mode == RunMode.RUN_USING_ENCODER) {
-            target = velocityPidf.p == 0 && velocityPidf.f == 0 ? 0 : targetVelocity;
+        double settleTime = SPIN_UP_TIME;
+        if (mode == RunMode.RUN_USING_ENCODER) {
+            if (velocityControl) target = velocityPidf.p == 0 && velocityPidf.f == 0 ? 0 : targetVelocity;
+        } else if (power == 0 && zeroPowerBehavior == ZeroPowerBehavior.FLOAT) {
+            settleTime = COAST_TIME;
         }
-        velocity += (target - velocity) * Math.min(1, dt / SPIN_UP_TIME);
+        velocity += (target - velocity) * Math.min(1, dt / settleTime);
     }
 
     public double shaftPower() {
