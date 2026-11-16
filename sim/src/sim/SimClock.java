@@ -2,9 +2,10 @@ package sim;
 
 public final class SimClock {
     private static long nanos = 1_000_000_000L;
+    public static volatile boolean realTime;
 
     public static long nanoTime() {
-        return nanos;
+        return realTime ? System.nanoTime() : nanos;
     }
 
     public static void advance(double seconds) {

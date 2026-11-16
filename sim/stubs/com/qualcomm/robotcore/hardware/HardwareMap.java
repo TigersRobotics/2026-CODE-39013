@@ -6,6 +6,8 @@ import java.util.Map;
 public class HardwareMap {
     private final Map<String, Object> devices = new HashMap<>();
 
+    public final DeviceMapping<DcMotor> dcMotor = new DeviceMapping<>(DcMotor.class);
+
     public void put(String name, Object device) {
         devices.put(name, device);
     }
@@ -17,5 +19,17 @@ public class HardwareMap {
                     + "\" and type " + classOrInterface.getSimpleName());
         }
         return classOrInterface.cast(device);
+    }
+
+    public class DeviceMapping<T> {
+        private final Class<T> type;
+
+        public DeviceMapping(Class<T> type) {
+            this.type = type;
+        }
+
+        public T get(String deviceName) {
+            return HardwareMap.this.get(type, deviceName);
+        }
     }
 }

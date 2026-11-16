@@ -8,6 +8,7 @@ Needs a JDK (Java 11 or newer). No Android Studio needed.
 ./sim/sim.sh          # start the sim, opens http://localhost:8039
 ./sim/sim.sh test     # run the sim tests
 ./sim/compile.sh      # compile ALL of TeamCode against the real FTC SDK and Pedro jars
+./sim/tuning/tune.sh  # run the Pedro AutoTune website on a simulated robot, see tuning/README.md
 ```
 
 ## Controllers

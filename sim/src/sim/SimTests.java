@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.constants.Competition;
 import org.firstinspires.ftc.teamcode.constants.RobotSpecs;
 import org.firstinspires.ftc.teamcode.constants.TuningConstants;
 import org.firstinspires.ftc.teamcode.opmodes.ControllerTest;
+import org.firstinspires.ftc.teamcode.opmodes.FlywheelPIDFTuning;
 import org.firstinspires.ftc.teamcode.opmodes.IntakeTest;
 import org.firstinspires.ftc.teamcode.opmodes.LimelightTest;
 import org.firstinspires.ftc.teamcode.opmodes.OdometryTest;
@@ -334,6 +335,38 @@ public class SimTests {
             near(robot.uptake.getPower(), -1, 1e-9, "left trigger moves balls down");
             s.stop();
             near(robot.uptake.getPower(), 0, 1e-9, "stop turns the uptake off");
+        });
+
+        test("flywheel spins up and holds its target velocity", () -> {
+            SimRobot robot = new SimRobot(0, 0, 0);
+            SimSession s = new SimSession(robot, new FlywheelPIDFTuning());
+            s.run(2);
+            check(robot.flywheel.getMode() == DcMotor.RunMode.RUN_USING_ENCODER, "flywheel uses RUN_USING_ENCODER");
+            check(robot.flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER).f > 0, "flywheel F is not zero");
+            near(robot.flywheel.getVelocity(), TuningConstants.FLYWHEEL_HIGH_VELOCITY, TuningConstants.FLYWHEEL_VELOCITY_TOLERANCE, "up to speed");
+            s.run(3);
+            near(robot.flywheel.getTargetVelocity(), TuningConstants.FLYWHEEL_HIGH_VELOCITY, 1e-9, "still asking for the same target");
+            near(robot.flywheel.getVelocity(), TuningConstants.FLYWHEEL_HIGH_VELOCITY, TuningConstants.FLYWHEEL_VELOCITY_TOLERANCE, "still at speed");
+            check(FlywheelController.isAtSpeed(), "controller reports at speed");
+        });
+
+        test("circle switches the tuning target velocity", () -> {
+            SimRobot robot = new SimRobot(0, 0, 0);
+            SimSession s = new SimSession(robot, new FlywheelPIDFTuning());
+            s.run(1);
+            s.tap(() -> s.gamepad1.b = true, () -> s.gamepad1.b = false);
+            s.run(2);
+            near(robot.flywheel.getVelocity(), TuningConstants.FLYWHEEL_LOW_VELOCITY, TuningConstants.FLYWHEEL_VELOCITY_TOLERANCE, "at the low target");
+        });
+
+        test("stopping the flywheel lets it coast", () -> {
+            SimRobot robot = new SimRobot(0, 0, 0);
+            SimSession s = new SimSession(robot, new FlywheelPIDFTuning());
+            s.run(1);
+            s.stop();
+            near(robot.flywheel.getPower(), 0, 1e-9, "power off");
+            check(robot.flywheel.getMode() == DcMotor.RunMode.RUN_WITHOUT_ENCODER, "no velocity loop holding it at zero");
+            check(robot.flywheel.getZeroPowerBehavior() == DcMotor.ZeroPowerBehavior.FLOAT, "flywheel floats instead of braking");
         });
 
         test("kicker pushes up, then comes back down after the kick time", () -> {

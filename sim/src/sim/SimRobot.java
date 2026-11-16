@@ -82,7 +82,17 @@ public class SimRobot {
         flywheel.step(dt);
         intake.step(dt);
         uptake.step(dt);
+        drive(dt);
 
+        double sin = Math.sin(heading), cos = Math.cos(heading);
+        x += (forwardVel * sin + strafeVel * cos) * dt;
+        y += (forwardVel * cos - strafeVel * sin) * dt;
+        heading += turnVel * dt;
+
+        if (collisions) collide();
+    }
+
+    protected void drive(double dt) {
         double fl = wheelFL(), fr = wheelFR(), bl = wheelBL(), br = wheelBR();
 
         double targetForward = (fl + fr + bl + br) / 4 * MAX_SPEED;
@@ -93,13 +103,6 @@ public class SimRobot {
         forwardVel += (targetForward - forwardVel) * blend;
         strafeVel += (targetStrafe - strafeVel) * blend;
         turnVel += (targetTurn - turnVel) * blend;
-
-        double sin = Math.sin(heading), cos = Math.cos(heading);
-        x += (forwardVel * sin + strafeVel * cos) * dt;
-        y += (forwardVel * cos - strafeVel * sin) * dt;
-        heading += turnVel * dt;
-
-        if (collisions) collide();
     }
 
     private void collide() {

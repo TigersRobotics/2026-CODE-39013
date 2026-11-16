@@ -1,7 +1,9 @@
 package com.qualcomm.hardware.gobilda;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
 public class GoBildaPinpointDriver {
     public enum DeviceStatus {
@@ -13,12 +15,18 @@ public class GoBildaPinpointDriver {
 
     public void setOffsets(double xOffset, double yOffset, DistanceUnit unit) {}
     public void setEncoderResolution(GoBildaOdometryPods pods) {}
+    public void setEncoderResolution(double ticksPerUnit, DistanceUnit unit) {}
     public void setEncoderDirections(EncoderDirection xEncoder, EncoderDirection yEncoder) {}
     public void resetPosAndIMU() {}
+    public void recalibrateIMU() {}
     public void update() {}
     public Pose2D getPosition() { return null; }
     public void setPosition(Pose2D pos) {}
+    public double getPosX(DistanceUnit unit) { return 0; }
+    public double getPosY(DistanceUnit unit) { return 0; }
+    public double getHeading(AngleUnit unit) { return 0; }
     public double getVelX(DistanceUnit unit) { return 0; }
     public double getVelY(DistanceUnit unit) { return 0; }
+    public double getHeadingVelocity(UnnormalizedAngleUnit unit) { return 0; }
     public DeviceStatus getDeviceStatus() { return DeviceStatus.NOT_READY; }
 }

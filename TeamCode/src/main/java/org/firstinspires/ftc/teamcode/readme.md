@@ -30,7 +30,7 @@ Code layout (same structure as team 34161):
 - opmodes/: TeleOpMain, RedAuto and BlueAuto (both run AutoMain), plus one small test OpMode per mechanism
 - auto/: OptimizedPaths, the best auto from sim/paths (blue is red rotated around the field center)
 - utils/: Timer, TimedTelemetry, OpModeUtils, UtilMethods, VectorMath, AutoAim (turret angle, flywheel speed and hood angle from the robot position)
-- pedro/: Constants (follower setup)
+- pedro/: Constants (follower setup) and Tuning (tuners on the Pedro tuning page)
 
 Every OpMode calls OpModeUtils in init, every loop, and in stop.
 
