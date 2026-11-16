@@ -12,6 +12,7 @@ public abstract class OpMode {
 
     public abstract void init();
     public abstract void loop();
+    public void init_loop() {}
     public void start() {}
     public void stop() {}
 }

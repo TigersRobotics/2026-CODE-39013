@@ -63,6 +63,10 @@ public class LimelightController {
         return hasTarget() ? latestResult.getTy() : 0;
     }
 
+    public static void setPipeline(int pipeline) {
+        if (isInitialized) limelight.pipelineSwitch(pipeline);
+    }
+
     public static void setTilt(double position) {
         tilt = UtilMethods.clip(position, 0, 1);
     }

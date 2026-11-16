@@ -31,10 +31,12 @@ public class SimRobot {
     public final SimServo hood = new SimServo();
     public final SimServo limelightTilt = new SimServo();
     public final SimLimelight limelight = new SimLimelight(this);
+    public final SimPinpoint pinpoint = new SimPinpoint(this);
 
     public double x, y, heading;
     public double forwardVel, strafeVel, turnVel;
     public boolean collisions = true;
+    public boolean hasPinpoint = true;
     public boolean red = true;
     public double targetX = Field.RED_HIVE_X, targetY = 0;
 
@@ -67,6 +69,7 @@ public class SimRobot {
         map.put(HardwareNames.TURRET_UP_ANGLE_SERVO_NAME, hood);
         map.put(HardwareNames.LIMELIGHT_TILT_SERVO_NAME, limelightTilt);
         map.put(HardwareNames.LIMELIGHT_NAME, limelight);
+        if (hasPinpoint) map.put(HardwareNames.ODOMETRY_NAME, pinpoint);
         return map;
     }
 

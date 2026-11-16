@@ -4,11 +4,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.constants.Competition;
 import org.firstinspires.ftc.teamcode.constants.RobotSpecs;
 import org.firstinspires.ftc.teamcode.constants.TuningConstants;
 import org.firstinspires.ftc.teamcode.opmodes.ControllerTest;
 import org.firstinspires.ftc.teamcode.opmodes.IntakeTest;
 import org.firstinspires.ftc.teamcode.opmodes.LimelightTest;
+import org.firstinspires.ftc.teamcode.opmodes.OdometryTest;
 import org.firstinspires.ftc.teamcode.opmodes.TeleOpMain;
 import org.firstinspires.ftc.teamcode.opmodes.TurretUpDownControllerV1Test;
 import org.firstinspires.ftc.teamcode.opmodes.UptakeServoTest;
@@ -19,6 +23,7 @@ import org.firstinspires.ftc.teamcode.robotControllers.MecanumDriveTrainControll
 import org.firstinspires.ftc.teamcode.robotControllers.TurretController;
 import org.firstinspires.ftc.teamcode.robotControllers.TurretUpAngleController;
 import org.firstinspires.ftc.teamcode.robotControllers.UptakeServoController;
+import org.firstinspires.ftc.teamcode.utils.AutoAim;
 import org.firstinspires.ftc.teamcode.utils.TimedTelemetry;
 import org.firstinspires.ftc.teamcode.utils.Timer;
 
@@ -577,6 +582,87 @@ public class SimTests {
                 near(m.getPower(), 0, 1e-9, "motor off");
             }
             check(!s.robot.limelight.isRunning(), "limelight stopped");
+        });
+
+        test("alliance choice during init sets the start pose", () -> {
+            SimRobot robot = SimRobot.atStart(false);
+            SimSession s = new SimSession(robot, new TeleOpMain(), false);
+            s.chooseAlliance(false);
+            check(s.telemetry.getShown().contains("Alliance BLUE"), "init telemetry shows blue");
+            s.start();
+            s.tick();
+            near(robot.pinpoint.getPosition().getX(DistanceUnit.INCH), Competition.BLUE_STARTING_X_IN, 1e-6, "blue start x");
+            near(robot.pinpoint.getPosition().getY(DistanceUnit.INCH), Competition.BLUE_STARTING_Y_IN, 1e-6, "blue start y");
+            near(robot.pinpoint.getPosition().getHeading(AngleUnit.DEGREES), Competition.BLUE_STARTING_HEADING_DEG, 1e-6, "blue start heading");
+            check(s.telemetry.getShown().contains("Alliance BLUE"), "loop telemetry shows blue");
+
+            SimRobot redRobot = SimRobot.atStart(true);
+            SimSession r = new SimSession(redRobot, new TeleOpMain(), false);
+            r.chooseAlliance(false);
+            r.chooseAlliance(true);
+            check(r.telemetry.getShown().contains("Alliance RED"), "switching back to red");
+            r.start();
+            r.tick();
+            near(redRobot.pinpoint.getPosition().getX(DistanceUnit.INCH), Competition.RED_STARTING_X_IN, 1e-6, "red start x");
+            near(redRobot.pinpoint.getPosition().getY(DistanceUnit.INCH), Competition.RED_STARTING_Y_IN, 1e-6, "red start y");
+            near(redRobot.pinpoint.getPosition().getHeading(AngleUnit.DEGREES), Competition.RED_STARTING_HEADING_DEG, 1e-6, "red start heading");
+        });
+
+        test("start poses match where the sim places the robot", () -> {
+            for (boolean red : new boolean[]{true, false}) {
+                SimRobot robot = SimRobot.atStart(red);
+                near(robot.pinpoint.trueX(), red ? Competition.RED_STARTING_X_IN : Competition.BLUE_STARTING_X_IN, 1e-9, "x");
+                near(robot.pinpoint.trueY(), red ? Competition.RED_STARTING_Y_IN : Competition.BLUE_STARTING_Y_IN, 1e-9, "y");
+                double expected = Math.toRadians(red ? Competition.RED_STARTING_HEADING_DEG : Competition.BLUE_STARTING_HEADING_DEG);
+                double error = robot.pinpoint.trueHeading() - expected;
+                near(Math.atan2(Math.sin(error), Math.cos(error)), 0, 1e-9, "heading");
+            }
+        });
+
+        test("TeleOp odometry follows the robot", () -> {
+            SimRobot robot = SimRobot.atStart(true);
+            SimSession s = new SimSession(robot, new TeleOpMain());
+            s.gamepad1.left_stick_y = -1;
+            s.gamepad1.left_stick_x = 0.5f;
+            s.run(1);
+            s.gamepad1.left_stick_y = 0;
+            s.gamepad1.left_stick_x = 0;
+            s.run(1);
+            near(robot.pinpoint.getPosition().getX(DistanceUnit.INCH), robot.pinpoint.trueX(), 0.01, "x matches the robot");
+            near(robot.pinpoint.getPosition().getY(DistanceUnit.INCH), robot.pinpoint.trueY(), 0.01, "y matches the robot");
+            check(robot.pinpoint.trueX() > Competition.RED_STARTING_X_IN + 20, "robot drove toward the HIVE");
+            check(s.telemetry.getShown().stream().anyMatch(l -> l.startsWith("Pose: x")), "pose in telemetry");
+        });
+
+        test("TeleOp still runs without a Pinpoint", () -> {
+            SimRobot robot = SimRobot.atStart(true);
+            robot.hasPinpoint = false;
+            SimSession s = new SimSession(robot, new TeleOpMain());
+            check(s.telemetry.getHistory().contains("No Pinpoint found, aiming uses the Limelight only"), "driver is told");
+            s.gamepad1.left_stick_y = -1;
+            s.run(0.5);
+            check(robot.x > -Field.HALF + 9 + 5, "still drives");
+            check(s.telemetry.getShown().contains("Pose: not available"), "telemetry says no pose");
+        });
+
+        test("odometry test drives field centric", () -> {
+            SimRobot robot = new SimRobot(0, 0, 0);
+            robot.collisions = false;
+            SimSession s = new SimSession(robot, new OdometryTest());
+            robot.heading = Math.PI / 2;
+            s.tick();
+            s.gamepad1.left_stick_y = -1;
+            s.run(1);
+            check(robot.y > 0.8 * SimRobot.MAX_SPEED, "moved along the starting forward direction, y = " + robot.y);
+            near(robot.x, 0, 0.5, "no drift sideways on the field");
+        });
+
+        test("auto aim points at the up cell", () -> {
+            near(AutoAim.distance(13.09, 13.79, true, false), 62.6, 0.1, "distance from the red audience shoot spot");
+            near(AutoAim.turretYaw(13.09, 13.79, 333.1, true, false), -69.4, 0.1, "turret yaw from the red audience shoot spot");
+            near(AutoAim.turretYaw(144 - 13.09, 144 - 13.79, 153.1, false, true), -69.4, 0.1, "blue mirror gives the same yaw");
+            near(AutoAim.flywheelVelocity(65), 1095, 0.5, "flywheel velocity between table rows");
+            near(AutoAim.hoodAngle(10), 75, 1e-9, "hood angle clamps below the table");
         });
 
         System.out.println();

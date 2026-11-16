@@ -17,7 +17,15 @@ public class TuningConstants {
 
     public static final double HOOD_STEP_ANGLE = 5;
 
+    public static final double[] SHOT_DISTANCES_IN = {30, 40, 50, 60, 70, 80, 90};
+    public static final double[] SHOT_FLYWHEEL_VELOCITIES = {988, 1004, 1037, 1075, 1115, 1156, 1198};
+    public static final double[] SHOT_HOOD_ANGLES = {75, 70.6, 65.9, 61.9, 59, 56.6, 54.7};
+
     public static final int LIMELIGHT_PIPELINE = 0;
+    public static final int RED_AUDIENCE_CELL_PIPELINE = 0;
+    public static final int RED_FAR_CELL_PIPELINE = 1;
+    public static final int BLUE_AUDIENCE_CELL_PIPELINE = 2;
+    public static final int BLUE_FAR_CELL_PIPELINE = 3;
     public static final double LIMELIGHT_TILT_STEP = 0.05;
     public static final double TURRET_AIM_GAIN = 0.2;
     public static final double TURRET_AIM_DEADBAND = 1.0;

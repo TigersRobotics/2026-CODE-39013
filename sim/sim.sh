@@ -14,8 +14,9 @@ mkdir -p out
     $TEAM/constants/*.java \
     $TEAM/utils/*.java \
     $TEAM/controller/*.java \
+    $TEAM/sensors/*.java \
     $(find $TEAM/robotControllers -name '*.java' ! -name AprilTag.java) \
-    $(find $TEAM/opmodes -name '*.java' ! -name OdometryTest.java) || exit 1
+    $(find $TEAM/opmodes -name '*.java' ! -name AutoMain.java ! -name RedAuto.java ! -name BlueAuto.java) || exit 1
 
 if [ "$1" = "test" ]; then
     "$BIN/java" -cp out/sim sim.SimTests

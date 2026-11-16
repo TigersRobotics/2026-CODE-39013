@@ -20,6 +20,10 @@ public class SimSession {
     }
 
     public SimSession(SimRobot robot, OpMode opMode) {
+        this(robot, opMode, true);
+    }
+
+    public SimSession(SimRobot robot, OpMode opMode, boolean startNow) {
         this.robot = robot;
         this.opMode = opMode;
         opMode.hardwareMap = robot.buildHardwareMap();
@@ -28,7 +32,29 @@ public class SimSession {
         opMode.gamepad2 = gamepad2;
         opMode.init();
         telemetry.updateIfDirty();
+        if (startNow) start();
+    }
+
+    public void initLoop() {
+        SimClock.advance(LOOP_TIME);
+        gamepad1.latchPresses();
+        gamepad2.latchPresses();
+        opMode.init_loop();
+        telemetry.updateIfDirty();
+    }
+
+    public void chooseAlliance(boolean red) {
+        if (red) gamepad2.dpad_left = true;
+        else gamepad2.dpad_right = true;
+        initLoop();
+        gamepad2.dpad_left = false;
+        gamepad2.dpad_right = false;
+        initLoop();
+    }
+
+    public void start() {
         opMode.start();
+        telemetry.updateIfDirty();
     }
 
     public void tick() {

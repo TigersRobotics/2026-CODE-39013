@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import org.firstinspires.ftc.teamcode.constants.RobotSpecs;
+import org.firstinspires.ftc.teamcode.opmodes.TeleOpMain;
 import org.firstinspires.ftc.teamcode.robotControllers.FlywheelController;
 import org.firstinspires.ftc.teamcode.robotControllers.UptakeServoController;
 
@@ -36,7 +37,9 @@ public class SimServer {
 
     private synchronized void reset() {
         if (session != null) session.stop();
-        session = new SimSession(SimRobot.atStart(red));
+        session = new SimSession(SimRobot.atStart(red), new TeleOpMain(), false);
+        session.chooseAlliance(red);
+        session.start();
     }
 
     private synchronized void tick() {
