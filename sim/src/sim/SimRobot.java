@@ -6,10 +6,10 @@ import org.firstinspires.ftc.teamcode.constants.HardwareNames;
 import org.firstinspires.ftc.teamcode.constants.RobotSpecs;
 
 public class SimRobot {
-    public static final double ROBOT_WIDTH = 18;
-    public static final double ROBOT_LENGTH = 18;
-    public static final double TRACK_WIDTH = 15;
-    public static final double WHEELBASE = 13;
+    public static final double ROBOT_WIDTH = 15.6;
+    public static final double ROBOT_LENGTH = 16.9;
+    public static final double TRACK_WIDTH = 12.28;
+    public static final double WHEELBASE = 10.12;
     public static final double WHEEL_DIAMETER = 4.094;
     public static final double MOTOR_RPM = 312;
     public static final double LOAD_FACTOR = 0.85;
@@ -140,6 +140,6 @@ public class SimRobot {
     }
 
     public double turretAngle() {
-        return (turretLeft.shaftPosition() - 0.5) * Math.toRadians(RobotSpecs.TURRET_SERVO_RANGE_DEGREES);
+        return (turretLeft.shaftPosition() - 0.5) * Math.toRadians(RobotSpecs.TURRET_SERVO_RANGE_DEGREES / RobotSpecs.TURRET_GEAR_RATIO);
     }
 }

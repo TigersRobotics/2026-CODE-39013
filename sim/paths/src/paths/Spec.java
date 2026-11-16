@@ -1,7 +1,7 @@
 package paths;
 
 public final class Spec {
-    public static final double ROBOT_SIZE = 18;
+    public static final double ROBOT_SIZE = 17;
     public static final double HALF_SIZE = ROBOT_SIZE / 2;
     public static final double CORNER_REACH = HALF_SIZE * Math.sqrt(2);
 

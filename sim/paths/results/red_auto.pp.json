@@ -1,0 +1,218 @@
+{
+  "startPoint": { "x": 8.5, "y": 12, "headingDeg": 0, "name": "start" },
+  "lines": [
+    {
+      "kind": "atomic",
+      "id": "startToShoot",
+      "name": "startToShoot",
+      "endPoint": { "x": 13.29, "y": 13.79, "name": "audienceShoot" },
+      "controlPoints": [{ "x": 10.91, "y": 12.65 }, { "x": 11.5, "y": 12.97 }],
+      "heading": { "type": "linear", "startDeg": 0, "endDeg": 33.7 },
+      "waitAfterMs": 1500,
+      "waitAfterName": "shoot preload",
+      "color": "#212121"
+    },
+    {
+      "kind": "atomic",
+      "id": "toGardenFromAudience",
+      "name": "toGardenFromAudience",
+      "endPoint": { "x": 14.5, "y": 11.5, "name": "garden" },
+      "controlPoints": [],
+      "heading": { "type": "linear", "startDeg": 33.7, "endDeg": -90 },
+      "waitAfterMs": 1000,
+      "waitAfterName": "pick up",
+      "color": "#2E7D32"
+    },
+    {
+      "kind": "atomic",
+      "id": "fromGardenToAudience",
+      "name": "fromGardenToAudience",
+      "endPoint": { "x": 13.29, "y": 13.79, "name": "audienceShoot" },
+      "controlPoints": [],
+      "heading": { "type": "linear", "startDeg": 270, "endDeg": 393.7 },
+      "waitAfterMs": 1500,
+      "waitAfterName": "shoot",
+      "color": "#2E7D32"
+    },
+    {
+      "kind": "atomic",
+      "id": "toAllianceFlowerFromAudience",
+      "name": "toAllianceFlowerFromAudience",
+      "endPoint": { "x": 18, "y": 48, "name": "allianceFlower" },
+      "controlPoints": [{ "x": 18.37, "y": 25.53 }, { "x": 17.86, "y": 20.42 }],
+      "heading": { "type": "linear", "startDeg": 33.7, "endDeg": 180 },
+      "waitAfterMs": 1000,
+      "waitAfterName": "pick up",
+      "color": "#EF6C00"
+    },
+    {
+      "kind": "atomic",
+      "id": "fromAllianceFlowerToFar",
+      "name": "fromAllianceFlowerToFar",
+      "endPoint": { "x": 38, "y": 120, "name": "farShoot" },
+      "controlPoints": [{ "x": 28.27, "y": 48 }, { "x": 42.23, "y": 115.77 }],
+      "heading": { "type": "tangential", "reverse": true },
+      "waitAfterMs": 1500,
+      "waitAfterName": "shoot",
+      "color": "#EF6C00"
+    },
+    {
+      "kind": "atomic",
+      "id": "toEndFlowerFromFar",
+      "name": "toEndFlowerFromFar",
+      "endPoint": { "x": 48, "y": 126, "name": "endFlower" },
+      "controlPoints": [{ "x": 44.55, "y": 121.62 }, { "x": 45.51, "y": 123.11 }],
+      "heading": { "type": "linear", "startDeg": 315, "endDeg": 450 },
+      "waitAfterMs": 1000,
+      "waitAfterName": "pick up",
+      "color": "#6A1B9A"
+    },
+    {
+      "kind": "atomic",
+      "id": "fromEndFlowerToFar",
+      "name": "fromEndFlowerToFar",
+      "endPoint": { "x": 38, "y": 120, "name": "farShoot" },
+      "controlPoints": [{ "x": 45.18, "y": 122.4 }, { "x": 43.79, "y": 121.57 }],
+      "heading": { "type": "linear", "startDeg": 90, "endDeg": -45 },
+      "waitAfterMs": 1500,
+      "waitAfterName": "shoot",
+      "color": "#6A1B9A"
+    },
+    {
+      "kind": "atomic",
+      "id": "toParkFromFar",
+      "name": "toParkFromFar",
+      "endPoint": { "x": 15.5, "y": 114, "name": "park" },
+      "controlPoints": [],
+      "heading": { "type": "constant", "degrees": 315 },
+      "color": "#00838F"
+    }
+  ],
+  "shapes": [
+    {
+      "id": "leg0",
+      "name": "HIVE leg 1",
+      "vertices": [
+        { "x": 45.77, "y": 51.03 },
+        { "x": 48.77, "y": 51.03 },
+        { "x": 48.77, "y": 54.03 },
+        { "x": 45.77, "y": 54.03 }
+      ],
+      "color": "#3E2723",
+      "fillColor": "#8D6E63"
+    },
+    {
+      "id": "leg1",
+      "name": "HIVE leg 2",
+      "vertices": [
+        { "x": 45.77, "y": 89.98 },
+        { "x": 48.77, "y": 89.98 },
+        { "x": 48.77, "y": 92.98 },
+        { "x": 45.77, "y": 92.98 }
+      ],
+      "color": "#3E2723",
+      "fillColor": "#8D6E63"
+    },
+    {
+      "id": "leg2",
+      "name": "HIVE leg 3",
+      "vertices": [
+        { "x": 95.23, "y": 51.03 },
+        { "x": 98.23, "y": 51.03 },
+        { "x": 98.23, "y": 54.03 },
+        { "x": 95.23, "y": 54.03 }
+      ],
+      "color": "#3E2723",
+      "fillColor": "#8D6E63"
+    },
+    {
+      "id": "leg3",
+      "name": "HIVE leg 4",
+      "vertices": [
+        { "x": 95.23, "y": 89.98 },
+        { "x": 98.23, "y": 89.98 },
+        { "x": 98.23, "y": 92.98 },
+        { "x": 95.23, "y": 92.98 }
+      ],
+      "color": "#3E2723",
+      "fillColor": "#8D6E63"
+    },
+    {
+      "id": "flower0",
+      "name": "FLOWER 1",
+      "vertices": [
+        { "x": 51.5, "y": 141.45 },
+        { "x": 49.45, "y": 143.5 },
+        { "x": 46.55, "y": 143.5 },
+        { "x": 44.5, "y": 141.45 },
+        { "x": 44.5, "y": 138.55 },
+        { "x": 46.55, "y": 136.5 },
+        { "x": 49.45, "y": 136.5 },
+        { "x": 51.5, "y": 138.55 }
+      ],
+      "color": "#F9A825",
+      "fillColor": "#FFF176"
+    },
+    {
+      "id": "flower1",
+      "name": "FLOWER 2",
+      "vertices": [
+        { "x": 143.5, "y": 97.45 },
+        { "x": 141.45, "y": 99.5 },
+        { "x": 138.55, "y": 99.5 },
+        { "x": 136.5, "y": 97.45 },
+        { "x": 136.5, "y": 94.55 },
+        { "x": 138.55, "y": 92.5 },
+        { "x": 141.45, "y": 92.5 },
+        { "x": 143.5, "y": 94.55 }
+      ],
+      "color": "#F9A825",
+      "fillColor": "#FFF176"
+    },
+    {
+      "id": "flower2",
+      "name": "FLOWER 3",
+      "vertices": [
+        { "x": 7.5, "y": 49.45 },
+        { "x": 5.45, "y": 51.5 },
+        { "x": 2.55, "y": 51.5 },
+        { "x": 0.5, "y": 49.45 },
+        { "x": 0.5, "y": 46.55 },
+        { "x": 2.55, "y": 44.5 },
+        { "x": 5.45, "y": 44.5 },
+        { "x": 7.5, "y": 46.55 }
+      ],
+      "color": "#F9A825",
+      "fillColor": "#FFF176"
+    },
+    {
+      "id": "flower3",
+      "name": "FLOWER 4",
+      "vertices": [
+        { "x": 99.5, "y": 5.45 },
+        { "x": 97.45, "y": 7.5 },
+        { "x": 94.55, "y": 7.5 },
+        { "x": 92.5, "y": 5.45 },
+        { "x": 92.5, "y": 2.55 },
+        { "x": 94.55, "y": 0.5 },
+        { "x": 97.45, "y": 0.5 },
+        { "x": 99.5, "y": 2.55 }
+      ],
+      "color": "#F9A825",
+      "fillColor": "#FFF176"
+    }
+  ],
+  "sequence": [
+    { "kind": "path", "lineId": "startToShoot" },
+    { "kind": "path", "lineId": "toGardenFromAudience" },
+    { "kind": "path", "lineId": "fromGardenToAudience" },
+    { "kind": "path", "lineId": "toAllianceFlowerFromAudience" },
+    { "kind": "path", "lineId": "fromAllianceFlowerToFar" },
+    { "kind": "path", "lineId": "toEndFlowerFromFar" },
+    { "kind": "path", "lineId": "fromEndFlowerToFar" },
+    { "kind": "path", "lineId": "toParkFromFar" }
+  ],
+  "fieldPoints": [],
+  "robot": { "rLength": 17, "rWidth": 17, "safetyMargin": 1, "forwardVelocity": 57, "strafeVelocity": 48.45, "aVelocity": 3.84, "maxAcceleration": 60, "maxDeceleration": 60 },
+  "version": "2.0.0"
+}

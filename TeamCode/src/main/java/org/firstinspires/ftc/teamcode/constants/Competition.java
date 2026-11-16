@@ -6,10 +6,10 @@ public class Competition {
     public static final double APRIL_TAG_HIVE_OFFSET_H = 1;
     public static final double APRIL_TAG_HIVE_OFFSET_D = 1;
 
-    public static final double RED_STARTING_X_IN = 9;
+    public static final double RED_STARTING_X_IN = 8.45;
     public static final double RED_STARTING_Y_IN = 72;
     public static final double RED_STARTING_HEADING_DEG = 0;
-    public static final double BLUE_STARTING_X_IN = 135;
+    public static final double BLUE_STARTING_X_IN = 135.55;
     public static final double BLUE_STARTING_Y_IN = 72;
     public static final double BLUE_STARTING_HEADING_DEG = 180;
 

@@ -658,9 +658,10 @@ public class SimTests {
         });
 
         test("auto aim points at the up cell", () -> {
-            near(AutoAim.distance(13.09, 13.79, true, false), 62.6, 0.1, "distance from the red audience shoot spot");
-            near(AutoAim.turretYaw(13.09, 13.79, 333.1, true, false), -69.4, 0.1, "turret yaw from the red audience shoot spot");
-            near(AutoAim.turretYaw(144 - 13.09, 144 - 13.79, 153.1, false, true), -69.4, 0.1, "blue mirror gives the same yaw");
+            near(AutoAim.distance(13.29, 13.79, true, false), 62.5, 0.1, "distance from the red audience shoot spot");
+            near(AutoAim.turretYaw(13.29, 13.79, 33.7, true, false), -8.9, 0.1, "turret yaw from the red audience shoot spot");
+            near(AutoAim.turretYaw(144 - 13.29, 144 - 13.79, 213.7, false, true), -8.9, 0.1, "blue mirror gives the same yaw");
+            check(Math.abs(AutoAim.turretYaw(38, 120, 315, true, true)) < RobotSpecs.MAX_YAW, "far shoot spot is inside the turret range");
             near(AutoAim.flywheelVelocity(65), 1095, 0.5, "flywheel velocity between table rows");
             near(AutoAim.hoodAngle(10), 75, 1e-9, "hood angle clamps below the table");
         });

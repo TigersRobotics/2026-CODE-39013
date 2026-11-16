@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.constants.HardwareNames.TURRET_LEFT
 import static org.firstinspires.ftc.teamcode.constants.HardwareNames.TURRET_RIGHT_SERVO_NAME;
 import static org.firstinspires.ftc.teamcode.constants.RobotSpecs.LIMELIGHT_ON_TURRET;
 import static org.firstinspires.ftc.teamcode.constants.RobotSpecs.MAX_YAW;
+import static org.firstinspires.ftc.teamcode.constants.RobotSpecs.TURRET_GEAR_RATIO;
 import static org.firstinspires.ftc.teamcode.constants.RobotSpecs.MIN_YAW;
 import static org.firstinspires.ftc.teamcode.constants.RobotSpecs.TURRET_SERVOS_MIRRORED;
 import static org.firstinspires.ftc.teamcode.constants.RobotSpecs.TURRET_SERVO_RANGE_DEGREES;
@@ -42,7 +43,7 @@ public class TurretController {
 
     public static void update() {
         if(isInitialized) {
-            double position = 0.5 + yaw / TURRET_SERVO_RANGE_DEGREES;
+            double position = 0.5 + yaw * TURRET_GEAR_RATIO / TURRET_SERVO_RANGE_DEGREES;
             leftServo.setPosition(position);
             rightServo.setPosition(position);
             TimedTelemetry.addData("Turret Yaw", "%.1f deg", 1, yaw);

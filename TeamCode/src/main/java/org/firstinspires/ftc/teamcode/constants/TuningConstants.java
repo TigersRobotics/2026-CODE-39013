@@ -17,6 +17,12 @@ public class TuningConstants {
 
     public static final double HOOD_STEP_ANGLE = 5;
 
+    public static final int AUTO_SHOTS_PER_VOLLEY = 4;
+    public static final double AUTO_SHOOT_TIMEOUT_MS = 3000;
+    public static final double AUTO_PICKUP_MS = 1000;
+    public static final double AUTO_PATH_TIMEOUT_MS = 6500;
+    public static final double AUTO_PARK_BY_MS = 26500;
+
     public static final double[] SHOT_DISTANCES_IN = {30, 40, 50, 60, 70, 80, 90};
     public static final double[] SHOT_FLYWHEEL_VELOCITIES = {988, 1004, 1037, 1075, 1115, 1156, 1198};
     public static final double[] SHOT_HOOD_ANGLES = {75, 70.6, 65.9, 61.9, 59, 56.6, 54.7};

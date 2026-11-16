@@ -38,7 +38,7 @@ public final class Field {
     public static final double ALLIANCE_AREA_DEPTH = 54;
 
     public static double[] start(boolean red) {
-        return red ? new double[]{-HALF + 9, 0, Math.PI / 2} : new double[]{HALF - 9, 0, -Math.PI / 2};
+        return red ? new double[]{-HALF + SimRobot.ROBOT_LENGTH / 2, 0, Math.PI / 2} : new double[]{HALF - SimRobot.ROBOT_LENGTH / 2, 0, -Math.PI / 2};
     }
 
     private Field() {}

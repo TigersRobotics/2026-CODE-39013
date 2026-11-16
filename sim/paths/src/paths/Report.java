@@ -10,8 +10,8 @@ import java.util.Locale;
 import java.util.Map;
 
 public final class Report {
-    public static final String AUTO_DIR = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/auto";
     public static final String RESULTS_DIR = "sim/paths/results";
+    public static final String QUICK_DIR = "sim/paths/out/quick";
 
     private final Planner planner;
     private final Routine red;
@@ -45,8 +45,8 @@ public final class Report {
     }
 
     public void writeAll(Path root) throws IOException {
-        Path results = root.resolve(RESULTS_DIR);
-        Path auto = root.resolve(AUTO_DIR);
+        Path results = root.resolve(quickRun ? QUICK_DIR : RESULTS_DIR);
+        Path auto = results.resolve("auto");
         Files.createDirectories(results);
         Files.createDirectories(auto);
         if (redPlans.isEmpty() || bluePlans.isEmpty()) throw new IllegalStateException("no plan fits in the time budget");

@@ -91,13 +91,18 @@ public class TeleOpMain extends OpMode {
         }
 
         double distance = 0;
-        if (hasPose) distance = AutoAim.distance(odometry.getX(DistanceUnit.INCH), odometry.getY(DistanceUnit.INCH), red, farUp);
+        double poseYaw = 0;
+        if (hasPose) {
+            distance = AutoAim.distance(odometry.getX(DistanceUnit.INCH), odometry.getY(DistanceUnit.INCH), red, farUp);
+            poseYaw = AutoAim.turretYaw(odometry.getX(DistanceUnit.INCH), odometry.getY(DistanceUnit.INCH), odometry.getHeading(AngleUnit.DEGREES), red, farUp);
+        }
         boolean poseAim = autoAim && hasPose;
+        if (poseAim && Math.abs(poseYaw) > RobotSpecs.MAX_YAW) TimedTelemetry.addLine("Turn the robot toward the HIVE, the turret cannot reach");
 
         LimelightController.update();
         if (!autoAim) TurretController.setYaw(gamepad2.left_stick_x * RobotSpecs.MAX_YAW);
         else if (LimelightController.hasTarget()) TurretController.aim(LimelightController.getTx());
-        else if (hasPose) TurretController.setYaw(AutoAim.turretYaw(odometry.getX(DistanceUnit.INCH), odometry.getY(DistanceUnit.INCH), odometry.getHeading(AngleUnit.DEGREES), red, farUp));
+        else if (hasPose) TurretController.setYaw(poseYaw);
         TurretController.update();
 
         double shotVelocity = poseAim ? AutoAim.flywheelVelocity(distance) : FLYWHEEL_TARGET_VELOCITY;

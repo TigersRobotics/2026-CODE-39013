@@ -1,0 +1,94 @@
+{
+  "method": "cross-entropy method over cubic Bezier control points with random restarts, seed 39013",
+  "mode": "full",
+  "candidate_paths_evaluated": 3466850,
+  "shoot_search_evaluations": 2443655,
+  "final_leg_evaluations": 1023121,
+  "shoot_pose_candidates": {"Audience": 168, "Far": 125},
+  "coordinates": "pedroX = simX + 72, pedroY = simY + 72, heading in degrees counterclockwise from +x",
+  "blue_transform": "180 degree rotation about field center, up sides swap",
+  "mirror_check_problems": 29,
+  "assumptions": {
+    "max_speed_in_s": 57.0,
+    "max_accel_in_s2": 60.0,
+    "max_lateral_accel_in_s2": 48.0,
+    "max_turn_rate_deg_s": 220,
+    "strafe_efficiency": 0.85,
+    "settle_time_s": 0.25,
+    "shoot_time_s": 1.50,
+    "pickup_time_s": 1.00,
+    "time_budget_s": 27.0,
+    "balls_per_volley": 4,
+    "balls_to_tip": 8,
+    "shoot_pose_tolerance_in": 2.0,
+    "shoot_heading_tolerance_deg": 5.0,
+    "turret_margin_deg": 10.0,
+    "obstacle_margin_in": 1.00
+  },
+  "best_plans": [
+    {
+      "alliance": "red",
+      "points": 48,
+      "tips": 2,
+      "time_s": 20.57,
+      "volleys": 4,
+      "pollen_launched": 16,
+      "steps": "start allianceWallGarden0, shoot preload at Audience, Garden, shoot at Audience, AllianceFlower, shoot at Far, EndFlower, shoot at Far, park",
+      "starting_up_side": "Audience",
+      "shoot_poses": [
+        {"up_side": "Audience", "pose": [13.29, 13.79, 33.7], "distance_in": 65.4, "approach_deg": 47.8, "turret_yaw_deg": -8.5, "hood_deg": 60.3, "flywheel_ticks_per_s": 1097, "reliable": true},
+        {"up_side": "Far", "pose": [38.00, 120.00, 315.0], "distance_in": 41.4, "approach_deg": 34.3, "turret_yaw_deg": 10.7, "hood_deg": 69.9, "flywheel_ticks_per_s": 1008, "reliable": true}
+      ],
+      "pedro_poses": {
+        "start": [8.50, 12.00, 0.0],
+        "garden": [14.50, 11.50, 270.0],
+        "allianceFlower": [18.00, 48.00, 180.0],
+        "endFlower": [48.00, 126.00, 90.0],
+        "park": [15.50, 114.00, 315.0]
+      },
+      "leg_times_s": {
+        "startToShoot": 0.835,
+        "toGardenFromAudience": 0.917,
+        "fromGardenToAudience": 0.917,
+        "toAllianceFlowerFromAudience": 2.086,
+        "fromAllianceFlowerToFar": 2.657,
+        "toEndFlowerFromFar": 1.330,
+        "fromEndFlowerToFar": 1.330,
+        "toParkFromFar": 1.496
+      },
+      "legality_problems": 0
+    },
+    {
+      "alliance": "blue",
+      "points": 48,
+      "tips": 2,
+      "time_s": 20.57,
+      "volleys": 4,
+      "pollen_launched": 16,
+      "steps": "start allianceWallGarden0, shoot preload at Far, Garden, shoot at Far, AllianceFlower, shoot at Audience, EndFlower, shoot at Audience, park",
+      "starting_up_side": "Far",
+      "shoot_poses": [
+        {"up_side": "Far", "pose": [130.71, 130.21, 213.7], "distance_in": 65.4, "approach_deg": 47.8, "turret_yaw_deg": -8.5, "hood_deg": 60.3, "flywheel_ticks_per_s": 1097, "reliable": true},
+        {"up_side": "Audience", "pose": [106.00, 24.00, 135.0], "distance_in": 41.4, "approach_deg": 34.3, "turret_yaw_deg": 10.7, "hood_deg": 69.9, "flywheel_ticks_per_s": 1008, "reliable": true}
+      ],
+      "pedro_poses": {
+        "start": [135.50, 132.00, 180.0],
+        "garden": [129.50, 132.50, 90.0],
+        "allianceFlower": [126.00, 96.00, 0.0],
+        "endFlower": [96.00, 18.00, 270.0],
+        "park": [128.50, 30.00, 135.0]
+      },
+      "leg_times_s": {
+        "startToShoot": 0.835,
+        "toGardenFromFar": 0.917,
+        "fromGardenToFar": 0.917,
+        "toAllianceFlowerFromFar": 2.086,
+        "fromAllianceFlowerToAudience": 2.657,
+        "toEndFlowerFromAudience": 1.330,
+        "fromEndFlowerToAudience": 1.330,
+        "toParkFromAudience": 1.496
+      },
+      "legality_problems": 0
+    }
+  ]
+}

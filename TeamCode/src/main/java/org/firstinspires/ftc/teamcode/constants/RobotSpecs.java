@@ -23,9 +23,10 @@ public class RobotSpecs {
     public static final double HOOD_MAX_ANGLE = 90;
     public static final double HOOD_DEFAULT_ANGLE = 45;
 
-    public static final double TURRET_SERVO_RANGE_DEGREES = 180;
-    public static final double MAX_YAW = 90;
-    public static final double MIN_YAW = -90;
+    public static final double TURRET_SERVO_RANGE_DEGREES = 300;
+    public static final double TURRET_GEAR_RATIO = 48.0 / 10.0;
+    public static final double MAX_YAW = TURRET_SERVO_RANGE_DEGREES / TURRET_GEAR_RATIO / 2;
+    public static final double MIN_YAW = -MAX_YAW;
     public static final boolean TURRET_SERVOS_MIRRORED = false;
 
     public static final double LIMELIGHT_TILT_DEFAULT_POSITION = 0.5;
