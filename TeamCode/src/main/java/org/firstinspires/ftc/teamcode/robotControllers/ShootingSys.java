@@ -15,6 +15,9 @@ public class ShootingSys {
     DcMotorEx intake;
     DcMotorEx uptake;
     DcMotorEx shooter;
+
+
+
     public ShootingSys(HardwareMap hardwareMap, Telemetry telemetry){
         this.telemetry = telemetry;
         intake = hardwareMap.get(DcMotorEx.class, INTAKE_MOTOR_NAME);
@@ -41,6 +44,11 @@ public class ShootingSys {
         float radSpeedUptake = (float) (2*Math.PI * speedIntake);
     }
 
+    public void CompShooting(float speedIntake, float speedUptake){
+        intake.setPower(speedIntake);
+        shooter.setPower(speedUptake);
+    }
+
     /**
      * Starts the movement of the robot. Can be used instead of using updateDrive() and updateTurn()
      * @param speed input the speed in rotations/s
@@ -49,7 +57,9 @@ public class ShootingSys {
     public void updateShoot(float speed){
         float radSpeed = (float) (2*Math.PI * speed);
 
+
         shooter.setVelocity(radSpeed);
+
 
 
     }

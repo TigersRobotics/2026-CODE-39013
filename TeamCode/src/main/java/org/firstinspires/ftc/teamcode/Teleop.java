@@ -31,18 +31,10 @@ public class Teleop extends OpMode {
         MecanumDriveTrainController.update(leftStickY,leftStickX ,rightStickX);
 
         if(intakePressed){
-            shootingSys.updateMoveBallUp(INTAKE_SPEED,UPTAKE_SPEED);
+            shootingSys.CompShooting(INTAKE_SPEED, UPTAKE_SPEED);
         }
-        else{
-            shootingSys.updateMoveBallUp(0,0);
+        else {
+            shootingSys.CompShooting(0, 0);
         }
-        if (shootPressed){
-            shootingSys.updateShoot(SHOOTER_SPEED);
-        }
-        else{
-            shootingSys.updateShoot(0);
-        }
-
-
     }
 }
