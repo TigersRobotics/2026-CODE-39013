@@ -8,10 +8,11 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import org.firstinspires.ftc.teamcode.robotControllers.ShootingSys;
 
 @Autonomous
 public class Auto extends OpMode {
-
+    ShootingSys shootingSys;
     private Follower follower;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
@@ -41,7 +42,6 @@ public class Auto extends OpMode {
     private RobotAutoState currentState = RobotAutoState.start;
 
     public void updateState() {
-
         switch (currentState) {
 
             case start:
@@ -73,6 +73,39 @@ public class Auto extends OpMode {
         }
     }
 
+
+    public void pickupState(){
+
+    }
+
+    public void shootState(){
+        //replace the values in CompShooting() with the correct ones
+        shootingSys.CompShooting(0, 0);
+    }
+
+    /** bro idk if this works
+    * executeState() runs after update state
+    *  if the state is pickup, for example, it calls pickupState()
+     *  if it is currentState.start it calls start(), which was previously completely unused...
+     *  and so on
+     */
+
+
+    //
+    public void executeState() {
+        if(currentState == currentState.pickup) {
+            // control motors for intake
+            pickupState();
+        }
+        else if(currentState == currentState.start){
+            start();
+        }
+        else if(currentState == currentState.shoot){
+            shootState();
+        }
+
+    }
+
     @Override
     public void init() {
         follower = Constants.create(hardwareMap);
@@ -96,6 +129,8 @@ public class Auto extends OpMode {
 
         // Check the autonomous state
         updateState();
+        executeState();
+
 
         telemetry.addData("State", currentState);
         telemetry.addData("Follower Busy", follower.isBusy());
