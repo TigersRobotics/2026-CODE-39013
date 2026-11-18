@@ -60,7 +60,7 @@ public class Auto extends OpMode {
                 break;
 
             case pickup:
-                // TODO: Add pickup mechanism here.
+                pickup();
 
                 //I changed this to use AutoPath's path2 instead of what was inputted here
                 //follower.follow(path2());
@@ -93,6 +93,11 @@ public class Auto extends OpMode {
 
     public void shoot(){
         // TODO: Add shooting mechanism here.
+    }
+
+
+    public void pickup(){
+        // TODO: Add pickup mechanism here.
     }
 
 
