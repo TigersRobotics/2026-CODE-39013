@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.robotControllers.ShootingSys;
 @Autonomous
 public class Auto extends OpMode {
     ShootingSys shootingSys;
+
+    AutoPath autoPath;
     private Follower follower;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
@@ -35,6 +37,7 @@ public class Auto extends OpMode {
         start,
         pickup,
         shoot,
+        park,
         done
     }
 
@@ -59,8 +62,9 @@ public class Auto extends OpMode {
             case pickup:
                 // TODO: Add pickup mechanism here.
 
-
-                follower.follow(path2());
+                //I changed this to use AutoPath's path2 instead of what was inputted here
+                //follower.follow(path2());
+                follower.follow(autoPath.path2());
 
                 currentState = RobotAutoState.shoot;
                 break;
@@ -68,9 +72,16 @@ public class Auto extends OpMode {
             case shoot:
                 // Wait until path2 is finished
                 if (!follower.isBusy()) {
-                    // TODO: Add shooting mechanism here.
-                    currentState = RobotAutoState.done;
+                    shoot();
+                    currentState = RobotAutoState.park;
                 }
+                break;
+
+            case park:
+                //follow path 3, to move to the parking area
+                follower.follow(autoPath.path3());
+
+                currentState = RobotAutoState.done;
                 break;
 
             case done:
@@ -79,42 +90,11 @@ public class Auto extends OpMode {
         }
     }
 
-/**
-    public void pickupState(){
-        shootingSys.CompShooting(1, 0);
+
+    public void shoot(){
+        // TODO: Add shooting mechanism here.
     }
 
-    public void shootState(){
-        //replace the values in CompShooting() with the correct ones
-        shootingSys.CompShooting(0, 0);
-    }
-
- */
-
-
-    /** bro idk if this works
-    * executeState() runs after update state
-    *  if the state is pickup, for example, it calls pickupState()
-     *  if it is currentState.start it calls start(), which was previously completely unused...
-     *  and so on
-     */
-
-
-   /**
-    public void executeState() {
-        if(currentState == currentState.pickup) {
-            // control motors for intake
-            pickupState();
-        }
-        else if(currentState == currentState.start){
-            start();
-        }
-        else if(currentState == currentState.shoot){
-            shootState();
-        }
-
-    }
-    */
 
 
     @Override
@@ -126,10 +106,13 @@ public class Auto extends OpMode {
         follower.setPose(start);
     }
 
+    // |||
+    // VVV  I assume this function is called manually, and at the same time that the "start" state is triggered.  But idk.
     @Override
     public void start() {
-
-        follower.follow(path1());
+        //the line below is the original.  I've changed it to use path1() from the AutoPath script.
+        //follower.follow(path1());
+        follower.follow(autoPath.path1());
     }
 
     @Override
