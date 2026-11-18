@@ -41,6 +41,11 @@ public class Auto extends OpMode {
     // This stores the CURRENT state
     private RobotAutoState currentState = RobotAutoState.start;
 
+
+    /**  Alright, currently it looks like the auto script follows point1 and point2, which are defined somewhere above this.
+     *   AutoPath doesn't seem to have any usages... I don't think we're using the path from pedropathing.  AutoPath script
+     *   does have start, path1, point2, and point3, though...
+      */
     public void updateState() {
         switch (currentState) {
 
@@ -53,6 +58,7 @@ public class Auto extends OpMode {
 
             case pickup:
                 // TODO: Add pickup mechanism here.
+
 
                 follower.follow(path2());
 
@@ -73,15 +79,18 @@ public class Auto extends OpMode {
         }
     }
 
-
+/**
     public void pickupState(){
-
+        shootingSys.CompShooting(1, 0);
     }
 
     public void shootState(){
         //replace the values in CompShooting() with the correct ones
         shootingSys.CompShooting(0, 0);
     }
+
+ */
+
 
     /** bro idk if this works
     * executeState() runs after update state
@@ -91,7 +100,7 @@ public class Auto extends OpMode {
      */
 
 
-    //
+   /**
     public void executeState() {
         if(currentState == currentState.pickup) {
             // control motors for intake
@@ -105,6 +114,8 @@ public class Auto extends OpMode {
         }
 
     }
+    */
+
 
     @Override
     public void init() {
@@ -129,7 +140,7 @@ public class Auto extends OpMode {
 
         // Check the autonomous state
         updateState();
-        executeState();
+        //executeState();
 
 
         telemetry.addData("State", currentState);
