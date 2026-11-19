@@ -30,8 +30,14 @@ public class ShootingSys {
         intake.setDirection(DcMotor.Direction.FORWARD);
 
 
-        telemetry.addLine("MECANUM DRIVE TRAIN INITIALIZED");
+        telemetry.addLine("ShootingSys initialized");
 
+
+    }
+
+    public void CompShooting(float speedIntake, float speedUptake){
+        intake.setPower(speedIntake);
+        shooter.setPower(speedUptake);
     }
     /**
      * Starts the movement of the robot. Can be used instead of using updateDrive() and updateTurn()
@@ -44,10 +50,7 @@ public class ShootingSys {
         float radSpeedUptake = (float) (2*Math.PI * speedIntake);
     }
 
-    public void CompShooting(float speedIntake, float speedUptake){
-        intake.setPower(speedIntake);
-        shooter.setPower(speedUptake);
-    }
+
 
     /**
      * Starts the movement of the robot. Can be used instead of using updateDrive() and updateTurn()

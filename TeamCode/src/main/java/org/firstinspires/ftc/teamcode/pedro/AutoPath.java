@@ -14,7 +14,9 @@ public class AutoPath {
     private final Pose path1 = poseFactory.of(56, 36, 90);
     private final Pose point2 = poseFactory.of(20.7677, 53.0269, 154.2067);
     private final Pose point3 = poseFactory.of(12.9783, 103.0409, 98.8524);
-
+    public Pose returnStartPose(){
+        return start;
+    }
     public com.pedropathing.paths.Path path1() {
         return Paths.line(start, path1).constant(path1);
     }

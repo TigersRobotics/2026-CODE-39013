@@ -35,11 +35,11 @@ Code layout (same structure as team 34161):
 Every OpMode calls OpModeUtils in init, every loop, and in stop.
 
 TeleOp Main controls:
-- Gamepad 1: left stick drives and strafes, right stick x turns, R1 faster, L1 slower
+- Gamepad 1: leftight when it sees our CELL, otherwise with odometry. With odometry it also sets the flywheel and hood from the shot table in TuningConstants
+  stick drives and strafes, right stick x turns, R1 faster, L1 slower
 - Gamepad 2: left stick x turret, R2 spins up the flywheel, Cross fires the kicker once the flywheel is at speed, L2 runs intake and uptake in, L1 reverses the intake, dpad up/down moves the hood, R1 turns auto aim on and off, dpad left/right flips which CELL is up
 - During init, gamepad 2 dpad left picks red and dpad right picks blue
-- Auto aim turns the turret with the Limelight when it sees our CELL, otherwise with odometry. With odometry it also sets the flywheel and hood from the shot table in TuningConstants
-
+- Auto aim turns the turret with the Limel
 11/16/2026:
 
 Limelight setup: make 4 AprilTag pipelines and set the ID filter on each one
@@ -55,3 +55,22 @@ Drivetrain (from the team CAD): 15.6 x 15.6 in frame, 16.9 in long with the inta
 Auto: start against the alliance wall next to the garden. It shoots the preload, then picks up from the garden, the alliance FLOWER and the end FLOWER, shooting after each, and parks by 26.5 s. Numbers to tune are the AUTO_ values in TuningConstants. TeleOp keeps the robot position from the end of auto.
 
 Before pushing run ./sim/compile.sh (compiles all of TeamCode against the real SDK) and ./sim/sim.sh test.
+
+
+
+
+**11/18/2026 jack log**
+
+worked in pedro folder
+
+changed auto pathing and read documentation to adjust auto code more readable
+
+added a timed shooting at the second event
+
+goal for next time: dynamic events system that automatically adjust to pedo pathing vectors
+
+PLS DO NOT MODIFY THE AUTO FOLDER LAYOUT in the existing document
+
+still some work to be donne in shooting sys
+
+pretty sure everything is field centric
