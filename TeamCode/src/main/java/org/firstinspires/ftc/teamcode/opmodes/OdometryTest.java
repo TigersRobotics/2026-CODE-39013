@@ -12,6 +12,9 @@ import org.firstinspires.ftc.teamcode.utils.OpModeUtils;
 import org.firstinspires.ftc.teamcode.utils.TimedTelemetry;
 import org.firstinspires.ftc.teamcode.utils.VectorMath;
 
+@Deprecated
+
+
 @TeleOp (name = "Odometry Test")
 public class OdometryTest extends OpMode {
     GoBildaOdometry odometry;

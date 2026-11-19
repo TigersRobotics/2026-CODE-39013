@@ -5,7 +5,7 @@ import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.math.Pose;
 
-
+//this comes straight from PEDRO PATHING VISUALIZER
 public class AutoPath {
 
     private final PoseFactory poseFactory = PoseFactory.degrees();

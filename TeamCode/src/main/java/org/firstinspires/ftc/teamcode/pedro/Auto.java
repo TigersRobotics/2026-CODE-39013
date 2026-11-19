@@ -34,11 +34,13 @@ public class Auto extends OpMode {
 
     private void startShoot(){
         // TODO: Add shooting mechanism here.
-        shootingSys.CompShooting(100f,40f);
+        shootingSys.shootSetPower(100);
+        shootingSys.intakeSetPower(100);
     }
     private void stopShoot(){
         // TODO: Add shooting mechanism here.
-        shootingSys.CompShooting(0,0);
+        shootingSys.shootSetPower(0);
+        shootingSys.intakeSetPower(0);
     }
 
 

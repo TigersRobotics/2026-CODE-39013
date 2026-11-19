@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.utils.TimedTelemetry;
-
+@Deprecated
 public class FlywheelController {
     private static boolean isInitialized;
     private static DcMotorEx flywheel;

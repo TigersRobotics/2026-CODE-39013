@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.utils.Timer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-
+@Deprecated
 public class OpModeMethods {
     public static ArrayList<Runnable> NO_PARAM_INIT = new ArrayList<>(
             List.of(

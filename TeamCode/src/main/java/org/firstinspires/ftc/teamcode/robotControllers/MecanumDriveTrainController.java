@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.controller.CustomController;
 import org.firstinspires.ftc.teamcode.utils.TimedTelemetry;
-
+//COLES's MECHANUM CONTROLLER
 public class MecanumDriveTrainController{
     public static boolean isInitialized = false;
     private static DcMotor frontLeft;

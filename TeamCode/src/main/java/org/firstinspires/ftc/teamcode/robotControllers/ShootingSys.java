@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class ShootingSys {
     Telemetry telemetry;
     DcMotorEx intake;
-    DcMotorEx uptake;
+    //DcMotorEx uptake;
     DcMotorEx shooter;
 
 
@@ -21,12 +21,12 @@ public class ShootingSys {
     public ShootingSys(HardwareMap hardwareMap, Telemetry telemetry){
         this.telemetry = telemetry;
         intake = hardwareMap.get(DcMotorEx.class, INTAKE_MOTOR_NAME);
-        uptake = hardwareMap.get(DcMotorEx.class,UPTAKE_MOTOR_NAME);
+
         shooter = hardwareMap.get(DcMotorEx.class,SHOOTER_MOTOR_NAME);
 
         //init direction
         shooter.setDirection(DcMotor.Direction.REVERSE);
-        uptake.setDirection(DcMotor.Direction.REVERSE);
+
         intake.setDirection(DcMotor.Direction.FORWARD);
 
 
@@ -35,36 +35,19 @@ public class ShootingSys {
 
     }
 
-    public void CompShooting(float speedIntake, float speedUptake){
-        intake.setPower(speedIntake);
-        shooter.setPower(speedUptake);
+    public void intakeSetPower(double power){
+        intake.setPower(power);
+
     }
-    /**
-     * Starts the movement of the robot. Can be used instead of using updateDrive() and updateTurn()
-     * @param speedIntake input the speed in rotations/s
-     * @param speedUptake input the speed in rotations/s
-     *
-     */
-    public void updateMoveBallUp(float speedIntake,float speedUptake){
-        float radSpeedIntake = (float) (2*Math.PI * speedIntake);
-        float radSpeedUptake = (float) (2*Math.PI * speedIntake);
+
+    public void shootSetPower(double power){
+        shooter.setPower(power);
+
     }
 
 
 
-    /**
-     * Starts the movement of the robot. Can be used instead of using updateDrive() and updateTurn()
-     * @param speed input the speed in rotations/s
-     *
-     */
-    public void updateShoot(float speed){
-        float radSpeed = (float) (2*Math.PI * speed);
 
 
-        shooter.setVelocity(radSpeed);
-
-
-
-    }
 
 }
