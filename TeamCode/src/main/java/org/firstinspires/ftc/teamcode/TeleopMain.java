@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -11,19 +12,24 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.robotControllers.MecanumDriveTrainController;
 import org.firstinspires.ftc.teamcode.robotControllers.ShootingSys;
 
-@Autonomous
+@TeleOp
 public class TeleopMain extends OpMode {
     ShootingSys shootingSys;
+    double speed = 1;
     GoBildaOdometry odometry;
+    private boolean isShooting = false;
+    private boolean wasShootPressed = false;
+
     @Override
     public void init() {
 
-        Pose2D startPos = new Pose2D(DistanceUnit.CM,0,0d, AngleUnit.DEGREES,0);
+        Pose2D startPos = new Pose2D(DistanceUnit.CM, 0, 0d, AngleUnit.DEGREES, 0);
         MecanumDriveTrainController.init(hardwareMap);
-        odometry = new GoBildaOdometry(hardwareMap,"odo");
-        shootingSys = new ShootingSys(hardwareMap,telemetry);
-
+        odometry = new GoBildaOdometry(hardwareMap, "odo");
+        shootingSys = new ShootingSys(hardwareMap, telemetry);
+        Boolean isShooting = false;
         telemetry.update();
+
     }
 
     @Override
@@ -35,25 +41,40 @@ public class TeleopMain extends OpMode {
         float rightStickX = gamepad1.right_stick_x;
         boolean intakePressed = gamepad1.left_trigger_pressed;
         boolean shootPressed = gamepad1.right_trigger_pressed;
+        boolean squarePressed = gamepad1.squareWasPressed();
+        boolean circlePressed = gamepad1.circleWasPressed();
 
         odometry.update();
-        telemetry.addData("pose: ",odometry.getPose());
-        telemetry.addData("heading: ",odometry.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("xcontroller", leftStickX);
+        telemetry.addData("ycontroller", leftStickY);
+        telemetry.addData("intakeispressed", intakePressed);
+        telemetry.addData("shotispressed", shootPressed);
+        telemetry.addData("pose: ", odometry.getPose());
+        telemetry.addData("heading: ", odometry.getHeading(AngleUnit.DEGREES));
         telemetry.update();
 
-        MecanumDriveTrainController.update(leftStickY,leftStickX ,rightStickX);
+        MecanumDriveTrainController.update(leftStickY, -leftStickX, rightStickX);
 
-        if(intakePressed){
-            shootingSys.intakeSetPower(100);
-        }
-        else{
+        if (intakePressed) {
+            shootingSys.intakeSetPower(150);
+        } else {
             shootingSys.intakeSetPower(0);
+
         }
-        if(shootPressed){
-            shootingSys.shootSetPower(100);
+        if (shootPressed && !wasShootPressed) {
+            isShooting = !isShooting;
         }
-        else{
-            shootingSys.shootSetPower(0);
+
+        wasShootPressed = shootPressed;
+
+        if (squarePressed) {
+            speed = Math.max(0, speed - 0.3);
+        } else if (circlePressed) {
+            speed = Math.min(1, speed + 0.3);
         }
+
+        shootingSys.shootSetPower(isShooting ? speed : 0);
+
+
     }
 }

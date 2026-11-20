@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robotControllers;
 
+import static org.firstinspires.ftc.teamcode.constants.HardwareNames.FLYWHEEL_NAME;
 import static org.firstinspires.ftc.teamcode.utils.Constants.INTAKE_MOTOR_NAME;
 import static org.firstinspires.ftc.teamcode.utils.Constants.SHOOTER_MOTOR_NAME;
 import static org.firstinspires.ftc.teamcode.utils.Constants.UPTAKE_MOTOR_NAME;
@@ -22,7 +23,7 @@ public class ShootingSys {
         this.telemetry = telemetry;
         intake = hardwareMap.get(DcMotorEx.class, INTAKE_MOTOR_NAME);
 
-        shooter = hardwareMap.get(DcMotorEx.class,SHOOTER_MOTOR_NAME);
+        shooter = hardwareMap.get(DcMotorEx.class,"shooter");
 
         //init direction
         shooter.setDirection(DcMotor.Direction.REVERSE);

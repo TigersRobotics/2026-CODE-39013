@@ -1,15 +1,26 @@
 package org.firstinspires.ftc.teamcode.constants;
 
 public class HardwareNames {
-    public static final String FRONT_LEFT_MOTOR_NAME = "frontLeft";
-    public static final String FRONT_RIGHT_MOTOR_NAME = "frontRight";
-    public static final String BACK_LEFT_MOTOR_NAME = "backLeft";
-    public static final String BACK_RIGHT_MOTOR_NAME = "backRight";
+    // front is where the intake is
+
+    /*
+
+    so like
+
+    frontleft   frontright
+
+    backleft    backright
+    * */
+    //part of expansion hub
+    public static final String FRONT_LEFT_MOTOR_NAME = "frontLeft"; //1
+    public static final String FRONT_RIGHT_MOTOR_NAME = "frontRight"; //2
+    public static final String BACK_LEFT_MOTOR_NAME = "backLeft";//0
+    public static final String BACK_RIGHT_MOTOR_NAME = "backRight";//3
 
     public static final String UPTAKE_SERVO_NAME = "kicker";
-    public static final String FLYWHEEL_NAME = "shooter";
+    public static final String FLYWHEEL_NAME = "shooter";//1
     public static final String UPTAKE_MOTOR_NAME = "uptake";
-    public static final String INTAKE_MOTOR_NAME = "intake";
+    public static final String INTAKE_MOTOR_NAME = "intake";//0
     public static final String ODOMETRY_NAME = "pinpoint";
     public static final String TURRET_UP_ANGLE_SERVO_NAME = "hood";
     public static final String TURRET_LEFT_SERVO_NAME = "turretLeft";

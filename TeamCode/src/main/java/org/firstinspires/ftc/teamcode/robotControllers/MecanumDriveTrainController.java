@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.constants.HardwareNames.FRONT_RIGHT
 import static org.firstinspires.ftc.teamcode.constants.TuningConstants.DRIVE_SPEED_LEVELS;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.controller.CustomController;
@@ -32,7 +33,7 @@ public class MecanumDriveTrainController{
             backLeft = hardwareMap.get(DcMotor.class, BACK_LEFT_MOTOR_NAME);
             backRight = hardwareMap.get(DcMotor.class, BACK_RIGHT_MOTOR_NAME);
 
-            frontLeft.setDirection(DcMotor.Direction.REVERSE);
+            frontLeft.setDirection(DcMotor.Direction.FORWARD);
             backLeft.setDirection(DcMotor.Direction.REVERSE);
             frontRight.setDirection(DcMotor.Direction.FORWARD);
             backRight.setDirection(DcMotor.Direction.FORWARD);
