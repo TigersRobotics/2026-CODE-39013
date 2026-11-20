@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.robotControllers.ShootingSys;
 @TeleOp
 public class TeleopMain extends OpMode {
     ShootingSys shootingSys;
-    double speed = 1;
+    double speed = 50.0;
     GoBildaOdometry odometry;
     private boolean isShooting = false;
     private boolean wasShootPressed = false;
@@ -68,9 +68,9 @@ public class TeleopMain extends OpMode {
         wasShootPressed = shootPressed;
 
         if (squarePressed) {
-            speed = Math.max(0, speed - 0.3);
+            speed = Math.max(0.0, speed - 10.0);
         } else if (circlePressed) {
-            speed = Math.min(1, speed + 0.3);
+            speed = Math.min(100.0, speed + 10.0);
         }
 
         shootingSys.shootSetPower(isShooting ? speed : 0);
