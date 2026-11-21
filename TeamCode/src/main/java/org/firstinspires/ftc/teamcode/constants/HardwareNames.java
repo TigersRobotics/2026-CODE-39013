@@ -21,8 +21,8 @@ public class HardwareNames {
     public static final String FLYWHEEL_NAME = "shooter";//1
     public static final String UPTAKE_MOTOR_NAME = "uptake";
     public static final String INTAKE_MOTOR_NAME = "intake";//0
-    public static final String ODOMETRY_NAME = "pinpoint";
-    public static final String TURRET_UP_ANGLE_SERVO_NAME = "hood";
+    public static final String ODOMETRY_NAME = "pinpoint";// i2c 1
+    public static final String FLOWER_DESCORE_NAME= "flower";
     public static final String TURRET_LEFT_SERVO_NAME = "turretLeft";
     public static final String TURRET_RIGHT_SERVO_NAME = "turretRight";
     public static final String LIMELIGHT_NAME = "limelight";

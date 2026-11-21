@@ -16,6 +16,7 @@ Auto code is in pedro/ auto.java
 
 11/15/2026:
 
+thank you jason/ cole
 Code layout (same structure as team 34161):
 - constants/: HardwareNames (robot config names), RobotSpecs (measurements), TuningConstants (numbers to tune), Competition, OpModeMethods (what OpModeUtils inits, updates and stops)
 - robotControllers/: one static controller per mechanism with init, update and stop

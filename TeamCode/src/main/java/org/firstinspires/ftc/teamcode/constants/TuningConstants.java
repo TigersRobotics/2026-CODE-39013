@@ -50,8 +50,8 @@ public class TuningConstants {
     public static final double FORESIGHT_FORWARD_BRAKE_QUADRATIC = 0.003;
     public static final double FORESIGHT_STRAFE_BRAKE_LINEAR = 0.06;
     public static final double FORESIGHT_STRAFE_BRAKE_QUADRATIC = 0.004;
-    public static final double FORESIGHT_MAX_FORWARD_VELOCITY = 55;
-    public static final double FORESIGHT_MAX_STRAFE_VELOCITY = 45;
-    public static final double FORESIGHT_FORWARD_DECELERATION = 40;
-    public static final double FORESIGHT_STRAFE_DECELERATION = 60;
+    public static final double FORESIGHT_MAX_FORWARD_VELOCITY = 10;
+    public static final double FORESIGHT_MAX_STRAFE_VELOCITY = 10;
+    public static final double FORESIGHT_FORWARD_DECELERATION = 5;
+    public static final double FORESIGHT_STRAFE_DECELERATION = 6;
 }

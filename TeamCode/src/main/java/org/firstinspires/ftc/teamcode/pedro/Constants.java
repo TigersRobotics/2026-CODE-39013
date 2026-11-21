@@ -53,7 +53,7 @@ public class Constants {
                 c.frontRightName.set(HardwareNames.FRONT_RIGHT_MOTOR_NAME);
                 c.backRightName.set(HardwareNames.BACK_RIGHT_MOTOR_NAME);
 
-                c.frontLeftDirection.set(DcMotorSimple.Direction.REVERSE);
+                c.frontLeftDirection.set(DcMotorSimple.Direction.FORWARD);
                 c.backLeftDirection.set(DcMotorSimple.Direction.REVERSE);
                 c.frontRightDirection.set(DcMotorSimple.Direction.FORWARD);
                 c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
@@ -62,10 +62,10 @@ public class Constants {
             }
     );
     public static PinpointConfig localizerConfig = new PinpointConfig(c -> {
-        c.name.set(HardwareNames.ODOMETRY_NAME);
+        c.name.set("pinpoint");
         c.podType.set(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
-        c.xPodOffset.set(RobotSpecs.OFFSETS_OF_ODOMETRY_PODS_IN_X);
-        c.yPodOffset.set(RobotSpecs.OFFSETS_OF_ODOMETRY_PODS_IN_Y);
+        c.xPodOffset.set(1.1303997790719582);
+        c.yPodOffset.set(1.6038870623731238);
         c.xPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
         c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
         c.globalDistanceUnit.set(DistanceUnit.INCH);

@@ -19,7 +19,7 @@ public class TurretUpAngleController {
     private static Servo turretUpAngleServo;
     public static void init(HardwareMap hardwareMap, boolean actuallyEnabled) {
         if(actuallyEnabled) {
-            turretUpAngleServo = hardwareMap.get(Servo.class, HardwareNames.TURRET_UP_ANGLE_SERVO_NAME);
+            turretUpAngleServo = hardwareMap.get(Servo.class, HardwareNames.FLOWER_DESCORE_NAME);
             targetAngle = HOOD_DEFAULT_ANGLE;
             turretUpAngleServo.setPosition(targetAngle / HOOD_SERVO_MAX_ANGLE);
             TimedTelemetry.addLine("Hood Controller Initialized");

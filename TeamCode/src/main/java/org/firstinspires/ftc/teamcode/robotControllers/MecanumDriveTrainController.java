@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.controller.CustomController;
 import org.firstinspires.ftc.teamcode.utils.TimedTelemetry;
 //COLES's MECHANUM CONTROLLER
 public class MecanumDriveTrainController{
+
     public static boolean isInitialized = false;
     private static DcMotor frontLeft;
     private static DcMotor frontRight;
@@ -73,24 +74,31 @@ public class MecanumDriveTrainController{
         speedLevel = DRIVE_SPEED_LEVELS.length - 1;
     }
 
+    public static void update(double driveY, double driveX, double turn) {
+        update(driveY, driveX, turn, 0);
+    }
+
     public static void update(double driveY, double driveX) {
-        update(driveY,driveX, 0);
+        update(driveY,driveX, 0,0);
     }
 
     public static void update() {
-        update(0, 0, 0);
+        update(0, 0, 0,0);
     }
 
-    public static void update(double driveY, double driveX, double turn) {
+    public static void update(double driveY, double driveX, double turn,double heading) {
         if(isInitialized) {
             TimedTelemetry.addData("driveY: ", driveY);
             TimedTelemetry.addData("driveX: ", driveX);
             TimedTelemetry.addData("turn: ", turn);
 
-            double fl = driveY + driveX + turn;
-            double fr = driveY - driveX - turn;
-            double bl = driveY - driveX + turn;
-            double br = driveY + driveX - turn;
+            double newDriveX = driveX * Math.cos(heading) + driveY * Math.sin(heading);
+            double newDriveY = driveY * Math.cos(heading) - driveX * Math.sin(heading);
+
+            double fl = newDriveY + newDriveX + turn;
+            double fr = newDriveY - newDriveX - turn;
+            double bl = newDriveY - newDriveX + turn;
+            double br = newDriveY + newDriveX - turn;
 
             double max = Math.max(Math.max(Math.abs(fl), Math.abs(fr)), Math.max(Math.abs(bl), Math.abs(br)));
 
@@ -117,9 +125,6 @@ public class MecanumDriveTrainController{
             TimedTelemetry.addData("Motors", "back left (%.2f), back right (%.2f)", 1, backLeftPower, backRightPower);
             TimedTelemetry.addData("Speed", "%.0f%%", 1, speed * 100);
         } else TimedTelemetry.addLine("Drivetrain being updated but not initialized!");
-    }
-    public static void update(CustomController controller) {
-        update(controller.getDriveY(), controller.getDriveX(), controller.getTurn());
     }
 
     public static void increaseSpeed() {

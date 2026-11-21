@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.UPTAKE_MOTOR_NAME;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -23,7 +24,7 @@ public class ShootingSys {
         this.telemetry = telemetry;
         intake = hardwareMap.get(DcMotorEx.class, INTAKE_MOTOR_NAME);
 
-        shooter = hardwareMap.get(DcMotorEx.class,"shooter");
+        shooter = hardwareMap.get(DcMotorEx.class,FLYWHEEL_NAME);
 
         //init direction
         shooter.setDirection(DcMotor.Direction.REVERSE);
@@ -37,11 +38,19 @@ public class ShootingSys {
     }
 
     public void intakeSetPower(double power){
+
         intake.setPower(power);
+
+    }
+    public void reverse(double power){
+        shooter.setDirection(DcMotor.Direction.FORWARD);
+        shooter.setPower(power);
+
 
     }
 
     public void shootSetPower(double power){
+        shooter.setDirection(DcMotor.Direction.REVERSE);
         shooter.setPower(power);
 
     }
